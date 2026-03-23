@@ -183,7 +183,7 @@ const Onboarding = () => {
         </Badge>
       </div>
       <p className="text-xs text-muted-foreground mt-6 text-center">
-        The product reads what you write and tags it — so patterns become visible over time.
+        Proof of Signal reads what you write and tags it, so patterns become visible over time.
       </p>
     </div>,
 
