@@ -55,13 +55,27 @@ const Index = () => {
                 The professional development tool for women in product management. 
                 Capture signals, reveal patterns, and build the evidence your career deserves.
               </p>
-              <Button
-                size="lg"
-                onClick={() => navigate('/onboarding')}
-                className="bg-accent hover:bg-accent/90 text-accent-foreground px-10 py-7 text-lg rounded-2xl shadow-lg shadow-accent/25 transition-all hover:shadow-xl hover:shadow-accent/30 hover:-translate-y-0.5"
-              >
-                Get started <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
+              <div className="flex flex-wrap gap-4">
+                <Button
+                  size="lg"
+                  onClick={() => navigate('/onboarding')}
+                  className="bg-accent hover:bg-accent/90 text-accent-foreground px-10 py-7 text-lg rounded-2xl shadow-lg shadow-accent/25 transition-all hover:shadow-xl hover:shadow-accent/30 hover:-translate-y-0.5"
+                >
+                  Get started <ArrowRight className="ml-2 w-5 h-5" />
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  onClick={() => {
+                    localStorage.removeItem('proof-of-signal');
+                    navigate('/dashboard');
+                    window.location.reload();
+                  }}
+                  className="px-10 py-7 text-lg rounded-2xl border-primary/20 text-primary hover:bg-primary/5"
+                >
+                  Skip to demo
+                </Button>
+              </div>
             </div>
             <div className="hidden lg:flex justify-center animate-fade-in" style={{ animationDelay: '0.2s' }}>
               <HeroIllustration />
