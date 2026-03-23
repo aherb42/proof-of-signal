@@ -1,5 +1,8 @@
 export const SIGNAL_TAGS = [
   'Missed Credit',
+  'Recognition',
+  'Manager Signal',
+  'Personal Milestone',
   'Visibility Win',
   'Stakeholder Friction',
   'Leadership Moment',
@@ -10,10 +13,13 @@ export const SIGNAL_TAGS = [
 export type SignalTag = typeof SIGNAL_TAGS[number];
 
 const KEYWORDS: Record<SignalTag, string[]> = {
-  'Missed Credit': ['credit', 'stole', 'took my idea', 'picked up', 'without credit', 'claimed', 'overlooked', 'ignored'],
-  'Visibility Win': ['recognized', 'shoutout', 'praised', 'visibility', 'spotlight', 'acknowledged', 'noticed', 'called out positively'],
+  'Missed Credit': ['credit', 'stole', 'took my idea', 'picked up', 'without credit', 'claimed', 'overlooked', 'ignored', 'attribution'],
+  'Recognition': ['recognized', 'mentioned', 'referenced', 'feedback', 'praised', 'shoutout', 'clear', 'well'],
+  'Manager Signal': ['manager', '1:1', 'one-on-one', 'skip-level', 'agenda', 'follow-up'],
+  'Personal Milestone': ['first', 'milestone', 'led', 'nobody left', 'felt like something', 'cross-functional'],
+  'Visibility Win': ['visibility', 'spotlight', 'acknowledged', 'noticed', 'called out positively'],
   'Stakeholder Friction': ['pushback', 'disagreed', 'conflict', 'tension', 'friction', 'blocked', 'resistant', 'difficult conversation'],
-  'Leadership Moment': ['led', 'stepped up', 'facilitated', 'mentored', 'coached', 'took charge', 'initiative', 'drove'],
+  'Leadership Moment': ['stepped up', 'facilitated', 'mentored', 'coached', 'took charge', 'initiative', 'drove'],
   'Decision Influence': ['decision', 'influenced', 'persuaded', 'changed direction', 'pivoted', 'convinced', 'shaped', 'strategy'],
   'General Signal': [],
 };
