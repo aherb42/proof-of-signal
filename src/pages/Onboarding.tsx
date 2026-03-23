@@ -169,12 +169,27 @@ const Onboarding = () => {
           <p className="text-sm text-muted-foreground mb-8">
             Something worth remembering from your last meeting or interaction.
           </p>
-          <Textarea
-            value={signalText}
-            onChange={e => setSignalText(e.target.value.slice(0, 500))}
-            placeholder="What happened?"
-            className="rounded-xl min-h-[120px] mb-2"
-          />
+          <div className="relative">
+            <Textarea
+              value={signalText}
+              onChange={e => setSignalText(e.target.value.slice(0, 500))}
+              placeholder="What happened?"
+              className="rounded-xl min-h-[120px] pr-10"
+            />
+            {voiceSupported && (
+              <button
+                type="button"
+                onClick={toggleVoice}
+                className="absolute top-3 right-3 p-1.5 rounded-lg transition-colors"
+              >
+                {listening ? (
+                  <span className="text-xs font-medium text-navy animate-pulse">Listening…</span>
+                ) : (
+                  <Mic className="w-4 h-4 text-muted-foreground hover:text-navy" />
+                )}
+              </button>
+            )}
+          </div>
           <p className="text-xs text-muted-foreground mb-6 text-right">{signalText.length}/500</p>
           <Button
             onClick={submitSignal}

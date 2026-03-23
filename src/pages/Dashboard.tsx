@@ -99,12 +99,27 @@ const Dashboard = () => {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <Textarea
-                    value={text}
-                    onChange={e => setText(e.target.value.slice(0, 500))}
-                    placeholder="What happened?"
-                    className="rounded-xl min-h-[100px]"
-                  />
+                  <div className="relative">
+                    <Textarea
+                      value={text}
+                      onChange={e => setText(e.target.value.slice(0, 500))}
+                      placeholder="What happened?"
+                      className="rounded-xl min-h-[100px] pr-10"
+                    />
+                    {voiceSupported && (
+                      <button
+                        type="button"
+                        onClick={toggleVoice}
+                        className="absolute top-3 right-3 p-1.5 rounded-lg transition-colors"
+                      >
+                        {listening ? (
+                          <span className="text-xs font-medium text-navy animate-pulse">Listening…</span>
+                        ) : (
+                          <Mic className="w-4 h-4 text-muted-foreground hover:text-navy" />
+                        )}
+                      </button>
+                    )}
+                  </div>
                   <div className="flex items-center justify-between">
                     <Input
                       type="date"
