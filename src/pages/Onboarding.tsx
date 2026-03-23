@@ -39,6 +39,9 @@ const Onboarding = () => {
   const [signalText, setSignalText] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [assignedTag, setAssignedTag] = useState('');
+  const { supported: voiceSupported, listening, toggle: toggleVoice } = useVoiceInput((transcript) => {
+    setSignalText(prev => prev ? `${prev} ${transcript}`.slice(0, 500) : transcript.slice(0, 500));
+  });
 
   const next = () => setStep(s => s + 1);
   const prev = () => setStep(s => s - 1);
