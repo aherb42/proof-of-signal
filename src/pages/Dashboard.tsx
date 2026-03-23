@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { autoTag, SIGNAL_TAGS } from '@/lib/signalTagger';
 import { Button } from '@/components/ui/button';
@@ -22,16 +22,6 @@ const Dashboard = () => {
   const [showFlaggedOnly, setShowFlaggedOnly] = useState(false);
   const { supported: voiceSupported, listening, toggle: toggleVoice } = useVoiceInput((transcript) => {
     setText(prev => prev ? `${prev} ${transcript}`.slice(0, 500) : transcript.slice(0, 500));
-  });
-
-  const [isFirstVisit] = useState(() => {
-    const key = 'proof-of-signal-visited-dashboard';
-    const visited = localStorage.getItem(key);
-    if (!visited) {
-      localStorage.setItem(key, 'true');
-      return true;
-    }
-    return false;
   });
 
   const handleSubmit = () => {
@@ -64,7 +54,7 @@ const Dashboard = () => {
         {/* Header */}
         <div className="mb-10">
           <h1 className="text-3xl font-serif text-navy mb-1">
-            {user.firstName ? `${isFirstVisit ? 'Welcome' : 'Welcome back'}, ${user.firstName}` : 'Your Dashboard'}
+            {user.firstName ? `Welcome back, ${user.firstName}` : 'Your Dashboard'}
           </h1>
           <p className="text-muted-foreground text-sm">Your signal record at a glance.</p>
         </div>
