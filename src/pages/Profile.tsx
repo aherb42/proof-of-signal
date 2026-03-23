@@ -37,7 +37,7 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-6 py-10 max-w-2xl">
+      <div className="w-full px-8 md:px-16 lg:px-24 py-10 max-w-[1600px] mx-auto">
         <div className="flex items-center justify-between mb-10">
           <h1 className="text-3xl font-serif text-navy">Your Profile</h1>
           {!editing && (

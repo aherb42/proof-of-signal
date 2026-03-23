@@ -19,7 +19,7 @@ const Patterns = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-6 py-10 max-w-2xl">
+      <div className="w-full px-8 md:px-16 lg:px-24 py-10 max-w-[1600px] mx-auto">
         <h1 className="text-3xl font-serif text-navy mb-2">Patterns</h1>
         <p className="text-muted-foreground text-sm mb-10">
           AI-powered insights based on your signals. The more you log, the clearer the picture.
@@ -31,7 +31,7 @@ const Patterns = () => {
             description={`Log ${3 - totalSignals} more signal${3 - totalSignals > 1 ? 's' : ''} to unlock your first pattern insight.`}
           />
         ) : (
-          <div className="space-y-8">
+          <div className="grid lg:grid-cols-2 gap-8">
             {/* Tag Distribution */}
             <div className="bg-card rounded-2xl border border-border p-6">
               <h2 className="text-lg font-serif text-navy mb-4">Signal themes</h2>
@@ -82,9 +82,9 @@ const Patterns = () => {
               </div>
             </div>
 
-            {/* Flagged Review */}
+            {/* Flagged Review - spans full width */}
             {signals.filter(s => s.flagged).length > 0 && (
-              <div className="bg-card rounded-2xl border border-border p-6">
+              <div className="bg-card rounded-2xl border border-border p-6 lg:col-span-2">
                 <h2 className="text-lg font-serif text-navy mb-4">Flagged for review</h2>
                 <div className="space-y-3">
                   {signals.filter(s => s.flagged).map(s => (
