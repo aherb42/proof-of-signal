@@ -40,6 +40,8 @@ const Onboarding = () => {
   const [signalText, setSignalText] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [assignedTag, setAssignedTag] = useState('');
+  const [swappedIn, setSwappedIn] = useState<string | null>(null);
+  const [swappedOut, setSwappedOut] = useState<string | null>(null);
   const { supported: voiceSupported, listening, toggle: toggleVoice } = useVoiceInput((transcript) => {
     setSignalText(prev => prev ? `${prev} ${transcript}`.slice(0, 500) : transcript.slice(0, 500));
   });
