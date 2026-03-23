@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { autoTag, SIGNAL_TAGS } from '@/lib/signalTagger';
 import { Button } from '@/components/ui/button';
