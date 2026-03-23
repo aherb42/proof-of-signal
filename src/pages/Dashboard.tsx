@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Check, CheckCircle2, Star, Lock, ChevronDown, ChevronUp, Filter } from 'lucide-react';
+import { Check, CheckCircle2, Star, Lock, ChevronDown, ChevronUp, Filter, Mic } from 'lucide-react';
+import { useVoiceInput } from '@/hooks/use-voice-input';
 import EmptyState from '@/components/illustrations/EmptyState';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -19,6 +20,9 @@ const Dashboard = () => {
   const [justLogged, setJustLogged] = useState(false);
   const [lastTag, setLastTag] = useState('');
   const [showFlaggedOnly, setShowFlaggedOnly] = useState(false);
+  const { supported: voiceSupported, listening, toggle: toggleVoice } = useVoiceInput((transcript) => {
+    setText(prev => prev ? `${prev} ${transcript}`.slice(0, 500) : transcript.slice(0, 500));
+  });
 
   const handleSubmit = () => {
     const tag = autoTag(text);
@@ -95,12 +99,27 @@ const Dashboard = () => {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <Textarea
-                    value={text}
-                    onChange={e => setText(e.target.value.slice(0, 500))}
-                    placeholder="What happened?"
-                    className="rounded-xl min-h-[100px]"
-                  />
+                  <div className="relative">
+                    <Textarea
+                      value={text}
+                      onChange={e => setText(e.target.value.slice(0, 500))}
+                      placeholder="What happened?"
+                      className="rounded-xl min-h-[100px] pr-10"
+                    />
+                    {voiceSupported && (
+                      <button
+                        type="button"
+                        onClick={toggleVoice}
+                        className="absolute top-3 right-3 p-1.5 rounded-lg transition-colors"
+                      >
+                        {listening ? (
+                          <span className="text-xs font-medium text-navy animate-pulse">Listening…</span>
+                        ) : (
+                          <Mic className="w-4 h-4 text-muted-foreground hover:text-navy" />
+                        )}
+                      </button>
+                    )}
+                  </div>
                   <div className="flex items-center justify-between">
                     <Input
                       type="date"
