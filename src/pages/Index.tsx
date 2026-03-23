@@ -42,25 +42,25 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero */}
+      {/* Hero — full-bleed */}
       <section className="relative overflow-hidden">
-        <div className="container mx-auto px-6 pt-20 pb-24 lg:pt-32 lg:pb-36">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="w-full px-8 md:px-16 lg:px-24 pt-20 pb-24 lg:pt-32 lg:pb-40">
+          <div className="grid lg:grid-cols-2 gap-16 items-center max-w-[1600px] mx-auto">
             <div className="animate-fade-in">
-              <p className="text-sm font-medium tracking-widest uppercase text-blush mb-4">Proof of Signal</p>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif text-navy leading-tight mb-6">
+              <p className="text-sm font-bold tracking-[0.25em] uppercase text-accent mb-5">Proof of Signal</p>
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif text-primary leading-[1.1] mb-8">
                 Your career,<br />on record.
               </h1>
-              <p className="text-lg text-muted-foreground max-w-md mb-8 leading-relaxed">
+              <p className="text-xl text-muted-foreground max-w-lg mb-10 leading-relaxed">
                 The professional development tool for women in product management. 
                 Capture signals, reveal patterns, and build the evidence your career deserves.
               </p>
               <Button
                 size="lg"
                 onClick={() => navigate('/onboarding')}
-                className="bg-navy hover:bg-navy-light text-primary-foreground px-8 py-6 text-base rounded-xl"
+                className="bg-accent hover:bg-accent/90 text-accent-foreground px-10 py-7 text-lg rounded-2xl shadow-lg shadow-accent/25 transition-all hover:shadow-xl hover:shadow-accent/30 hover:-translate-y-0.5"
               >
-                Get started <ArrowRight className="ml-2 w-4 h-4" />
+                Get started <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </div>
             <div className="hidden lg:flex justify-center animate-fade-in" style={{ animationDelay: '0.2s' }}>
@@ -68,47 +68,53 @@ const Index = () => {
             </div>
           </div>
         </div>
-        <SignalWavePattern className="absolute bottom-0 left-0 w-full h-24" />
+        <SignalWavePattern className="absolute bottom-0 left-0 w-full h-28" />
       </section>
 
-      {/* Features */}
-      <section className="py-24 bg-rose-soft/50">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-serif text-navy mb-4">How it works</h2>
-            <p className="text-muted-foreground max-w-lg mx-auto">
-              A simple practice that compounds. Three minutes today becomes months of evidence tomorrow.
-            </p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-10 max-w-4xl mx-auto">
-            {features.map((f, i) => (
-              <div key={f.type} className="text-center animate-fade-in" style={{ animationDelay: `${i * 0.15}s` }}>
-                <div className="flex justify-center mb-5">
-                  <FeatureIcon type={f.type} />
+      {/* Features — full width with vibrant cards */}
+      <section className="py-28 bg-rose-soft">
+        <div className="w-full px-8 md:px-16 lg:px-24">
+          <div className="max-w-[1600px] mx-auto">
+            <div className="text-center mb-20">
+              <h2 className="text-4xl md:text-5xl font-serif text-primary mb-5">How it works</h2>
+              <p className="text-muted-foreground text-lg max-w-xl mx-auto">
+                A simple practice that compounds. Three minutes today becomes months of evidence tomorrow.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-8">
+              {features.map((f, i) => (
+                <div
+                  key={f.type}
+                  className="bg-background rounded-3xl p-10 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 animate-fade-in border border-border/50"
+                  style={{ animationDelay: `${i * 0.15}s` }}
+                >
+                  <div className="flex justify-center mb-7">
+                    <FeatureIcon type={f.type} />
+                  </div>
+                  <h3 className="text-2xl font-serif text-primary mb-4 text-center">{f.title}</h3>
+                  <p className="text-muted-foreground leading-relaxed text-center">{f.description}</p>
                 </div>
-                <h3 className="text-xl font-serif text-navy mb-3">{f.title}</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">{f.description}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Social Proof */}
-      <section className="py-24">
-        <div className="container mx-auto px-6">
-          <div className="max-w-3xl mx-auto">
-            <div className="flex items-center gap-4 mb-10">
+      {/* Social Proof — full width */}
+      <section className="py-28">
+        <div className="w-full px-8 md:px-16 lg:px-24">
+          <div className="max-w-[1600px] mx-auto">
+            <div className="flex items-center gap-5 mb-14">
               <AvatarSilhouettes />
-              <p className="text-sm text-muted-foreground">Trusted by product managers building their case.</p>
+              <p className="text-muted-foreground">Trusted by product managers building their case.</p>
             </div>
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid md:grid-cols-2 gap-10">
               {testimonials.map(t => (
-                <div key={t.name} className="bg-card rounded-2xl p-8 border border-border">
-                  <p className="text-foreground leading-relaxed mb-6 italic">"{t.quote}"</p>
+                <div key={t.name} className="bg-background rounded-3xl p-10 border-2 border-blush-light/60 hover:border-accent/40 transition-colors">
+                  <p className="text-foreground text-lg leading-relaxed mb-8 italic">"{t.quote}"</p>
                   <div>
-                    <p className="font-semibold text-navy text-sm">{t.name}</p>
-                    <p className="text-muted-foreground text-xs">{t.role}</p>
+                    <p className="font-bold text-primary">{t.name}</p>
+                    <p className="text-muted-foreground text-sm">{t.role}</p>
                   </div>
                 </div>
               ))}
@@ -117,29 +123,29 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Final CTA */}
-      <section className="relative py-24 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-navy to-navy-light" />
-        <div className="relative container mx-auto px-6 text-center">
-          <h2 className="text-3xl md:text-4xl font-serif text-primary-foreground mb-4">
+      {/* Final CTA — full-bleed gradient */}
+      <section className="relative py-32 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary via-navy to-navy-light" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,hsl(340_80%_65%/0.15),transparent_60%)]" />
+        <div className="relative w-full px-8 md:px-16 lg:px-24 text-center">
+          <h2 className="text-4xl md:text-5xl font-serif text-primary-foreground mb-6">
             Start building your record
           </h2>
-          <p className="text-primary-foreground/70 max-w-md mx-auto mb-8">
+          <p className="text-primary-foreground/70 text-lg max-w-lg mx-auto mb-10">
             It takes 60 seconds to log your first signal. Your future self will thank you.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-10">
             <Button
               size="lg"
-              variant="secondary"
               onClick={() => navigate('/onboarding')}
-              className="bg-blush hover:bg-blush-light text-navy px-8 py-6 text-base rounded-xl"
+              className="bg-accent hover:bg-accent/90 text-accent-foreground px-10 py-7 text-lg rounded-2xl shadow-lg shadow-accent/30 transition-all hover:shadow-xl hover:-translate-y-0.5"
             >
-              Get started — it's free <ArrowRight className="ml-2 w-4 h-4" />
+              Get started — it's free <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
           </div>
-          <div className="flex items-center justify-center gap-6 text-primary-foreground/60 text-sm">
-            <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4" /> No account needed yet</span>
-            <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4" /> Takes 2 minutes</span>
+          <div className="flex items-center justify-center gap-8 text-primary-foreground/60 text-sm">
+            <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4" /> No account needed yet</span>
+            <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4" /> Takes 2 minutes</span>
           </div>
         </div>
       </section>
