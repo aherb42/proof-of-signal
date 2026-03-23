@@ -3,7 +3,7 @@ import { useApp } from '@/contexts/AppContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Check, Edit2 } from 'lucide-react';
+import { Check, Edit2, RotateCcw } from 'lucide-react';
 
 const CAREER_STAGES = [
   'Aspiring PM', 'Associate / Junior PM', 'Product Manager',

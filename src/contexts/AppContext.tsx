@@ -127,8 +127,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }));
   };
 
+  const resetToDemo = () => {
+    setState({ user: demoUser, signals: demoSignals });
+  };
+
   return (
-    <AppContext.Provider value={{ ...state, setUser, addSignal, updateSignal, toggleFlag }}>
+    <AppContext.Provider value={{ ...state, setUser, addSignal, updateSignal, toggleFlag, resetToDemo }}>
       {children}
     </AppContext.Provider>
   );
