@@ -58,6 +58,9 @@ const Onboarding = () => {
       // Replace least-recently-selected (first in array)
       const replaced = prev[0];
       const next = [prev[1], g];
+      setSwappedOut(replaced);
+      setSwappedIn(g);
+      setTimeout(() => { setSwappedIn(null); setSwappedOut(null); }, 300);
       toast({
         description: `Replaced "${replaced}" — undo`,
         action: (
