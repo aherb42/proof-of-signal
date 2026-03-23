@@ -24,6 +24,16 @@ const Dashboard = () => {
     setText(prev => prev ? `${prev} ${transcript}`.slice(0, 500) : transcript.slice(0, 500));
   });
 
+  const [isFirstVisit] = useState(() => {
+    const key = 'proof-of-signal-visited-dashboard';
+    const visited = localStorage.getItem(key);
+    if (!visited) {
+      localStorage.setItem(key, 'true');
+      return true;
+    }
+    return false;
+  });
+
   const handleSubmit = () => {
     const tag = autoTag(text);
     setLastTag(tag);
