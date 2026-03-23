@@ -230,7 +230,7 @@ const Onboarding = () => {
           <div className="w-16 h-16 rounded-full bg-rose-soft flex items-center justify-center mx-auto mb-6">
             <Check className="w-7 h-7 text-navy" />
           </div>
-          <p className="text-xl font-serif text-navy mb-3">Logged. ✓</p>
+          <p className="text-xl font-serif text-navy mb-3">Signal Captured ✓</p>
           <Badge variant="secondary" className="bg-rose-soft text-navy border-0 mb-8">
             {assignedTag}
           </Badge>
