@@ -62,12 +62,15 @@ const Patterns = () => {
                 <div>
                   <h3 className="text-sm font-semibold text-navy mb-1">What your signals suggest</h3>
                   {user.firstName === 'Diana' ? (
-                    <p className="text-sm text-foreground leading-relaxed">
-                      Diana, your signals show a recurring theme around credit and visibility in cross-functional settings. 
-                      This is worth paying attention to — especially as you prepare for your next review cycle. 
-                      Consider building a "visibility log" alongside your signals: each time you contribute to a decision, 
-                      note it in a shared space (Slack, email) so the record exists beyond your memory.
-                    </p>
+                    <div className="space-y-3">
+                      <h4 className="text-sm font-semibold text-navy">Your signals from this week</h4>
+                      <p className="text-sm text-foreground leading-relaxed">
+                        A pattern is emerging: you're generating recognition at the senior level (CPO, VP Design) at the same time you're noticing credit gaps at the peer level. That's worth paying attention to — especially before a promotion conversation.
+                      </p>
+                      <p className="text-sm text-foreground leading-relaxed font-medium">
+                        Suggested next action: Flag your top 3 recognition signals and bring them to your next 1:1. The question isn't whether you've done the work — it's whether your manager has seen it.
+                      </p>
+                    </div>
                   ) : (
                     <p className="text-sm text-foreground leading-relaxed">
                       Based on your {totalSignals} signals, your most frequent theme is <strong>{topTags[0]?.[0]}</strong>. 

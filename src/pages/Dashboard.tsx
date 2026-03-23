@@ -91,11 +91,15 @@ const Dashboard = () => {
               <div>
                 <h3 className="text-sm font-semibold text-navy mb-1">Pattern detected</h3>
                 {user.firstName === 'Diana' ? (
-                  <p className="text-sm text-foreground leading-relaxed">
-                    You've logged multiple signals around credit and visibility. This is a common pattern for senior PMs 
-                    navigating stakeholder-heavy environments. Consider: when was the last time you explicitly documented 
-                    your contribution in a shared channel?
-                  </p>
+                  <div className="space-y-3">
+                    <h4 className="text-sm font-semibold text-navy">Your signals from this week</h4>
+                    <p className="text-sm text-foreground leading-relaxed">
+                      A pattern is emerging: you're generating recognition at the senior level (CPO, VP Design) at the same time you're noticing credit gaps at the peer level. That's worth paying attention to — especially before a promotion conversation.
+                    </p>
+                    <p className="text-sm text-foreground leading-relaxed font-medium">
+                      Suggested next action: Flag your top 3 recognition signals and bring them to your next 1:1. The question isn't whether you've done the work — it's whether your manager has seen it.
+                    </p>
+                  </div>
                 ) : (
                   <p className="text-sm text-foreground leading-relaxed">
                     You've logged {signalCount} signals so far. As patterns emerge, you'll see personalized insights here — 
