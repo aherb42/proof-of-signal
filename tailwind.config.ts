@@ -112,6 +112,7 @@ export default {
         "fade-in": "fade-in 0.6s ease-out forwards",
         "goal-swap-in": "goal-swap-in 0.25s ease-out",
         "goal-swap-out": "goal-swap-out 0.15s ease-out",
+        "goal-shake": "goal-shake 0.3s ease-out",
       },
     },
   },

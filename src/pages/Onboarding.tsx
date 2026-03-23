@@ -159,7 +159,7 @@ const Onboarding = () => {
               goals.includes(g)
                 ? 'border-navy bg-navy text-primary-foreground'
                 : 'border-border bg-card text-foreground hover:border-blush'
-            } ${swappedIn === g ? 'animate-goal-swap-in' : ''} ${swappedOut === g ? 'animate-goal-swap-out' : ''}`}
+            } ${swappedIn === g ? 'animate-goal-swap-in' : ''} ${swappedOut === g ? 'animate-goal-shake' : ''}`}
           >
             {goals.includes(g) && <Check className="inline w-3.5 h-3.5 mr-1.5" />}
             {g}
