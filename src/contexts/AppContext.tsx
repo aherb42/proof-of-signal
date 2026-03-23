@@ -26,6 +26,7 @@ interface AppState {
   addSignal: (signal: Omit<Signal, 'id'>) => void;
   updateSignal: (id: string, updates: Partial<Signal>) => void;
   toggleFlag: (id: string) => void;
+  resetToDemo: () => void;
 }
 
 const defaultUser: UserProfile = {
@@ -126,8 +127,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }));
   };
 
+  const resetToDemo = () => {
+    setState({ user: demoUser, signals: demoSignals });
+  };
+
   return (
-    <AppContext.Provider value={{ ...state, setUser, addSignal, updateSignal, toggleFlag }}>
+    <AppContext.Provider value={{ ...state, setUser, addSignal, updateSignal, toggleFlag, resetToDemo }}>
       {children}
     </AppContext.Provider>
   );
