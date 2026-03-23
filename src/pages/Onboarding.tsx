@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, ArrowLeft, Check } from 'lucide-react';
+import HeroIllustration from '@/components/illustrations/HeroIllustration';
 
 const CAREER_STAGES = [
   'Aspiring PM',
