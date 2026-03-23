@@ -16,7 +16,7 @@ const GOALS = [
 ];
 
 const Profile = () => {
-  const { user, signals, setUser } = useApp();
+  const { user, signals, setUser, resetToDemo } = useApp();
   const [editing, setEditing] = useState(false);
   const [firstName, setFirstName] = useState(user.firstName);
   const [careerStage, setCareerStage] = useState(user.careerStage);
