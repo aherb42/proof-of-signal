@@ -98,6 +98,13 @@ export default {
           "0%": { opacity: "1", transform: "scale(1)" },
           "100%": { opacity: "0.6", transform: "scale(0.96)" },
         },
+        "goal-shake": {
+          "0%, 100%": { transform: "translateX(0)" },
+          "20%": { transform: "translateX(-3px)" },
+          "40%": { transform: "translateX(3px)" },
+          "60%": { transform: "translateX(-2px)" },
+          "80%": { transform: "translateX(2px)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
