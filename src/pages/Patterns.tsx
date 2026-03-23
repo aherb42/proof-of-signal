@@ -31,7 +31,7 @@ const Patterns = () => {
             description={`Log ${3 - totalSignals} more signal${3 - totalSignals > 1 ? 's' : ''} to unlock your first pattern insight.`}
           />
         ) : (
-          <div className="space-y-8">
+          <div className="grid lg:grid-cols-2 gap-8">
             {/* Tag Distribution */}
             <div className="bg-card rounded-2xl border border-border p-6">
               <h2 className="text-lg font-serif text-navy mb-4">Signal themes</h2>
@@ -82,9 +82,9 @@ const Patterns = () => {
               </div>
             </div>
 
-            {/* Flagged Review */}
+            {/* Flagged Review - spans full width */}
             {signals.filter(s => s.flagged).length > 0 && (
-              <div className="bg-card rounded-2xl border border-border p-6">
+              <div className="bg-card rounded-2xl border border-border p-6 lg:col-span-2">
                 <h2 className="text-lg font-serif text-navy mb-4">Flagged for review</h2>
                 <div className="space-y-3">
                   {signals.filter(s => s.flagged).map(s => (
