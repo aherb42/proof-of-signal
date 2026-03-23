@@ -40,6 +40,8 @@ const Onboarding = () => {
   const [signalText, setSignalText] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [assignedTag, setAssignedTag] = useState('');
+  const [swappedIn, setSwappedIn] = useState<string | null>(null);
+  const [swappedOut, setSwappedOut] = useState<string | null>(null);
   const { supported: voiceSupported, listening, toggle: toggleVoice } = useVoiceInput((transcript) => {
     setSignalText(prev => prev ? `${prev} ${transcript}`.slice(0, 500) : transcript.slice(0, 500));
   });
@@ -56,6 +58,9 @@ const Onboarding = () => {
       // Replace least-recently-selected (first in array)
       const replaced = prev[0];
       const next = [prev[1], g];
+      setSwappedOut(replaced);
+      setSwappedIn(g);
+      setTimeout(() => { setSwappedIn(null); setSwappedOut(null); }, 300);
       toast({
         description: `Replaced "${replaced}" — undo`,
         action: (
@@ -154,7 +159,7 @@ const Onboarding = () => {
               goals.includes(g)
                 ? 'border-navy bg-navy text-primary-foreground'
                 : 'border-border bg-card text-foreground hover:border-blush'
-            }`}
+            } ${swappedIn === g ? 'animate-goal-swap-in' : ''} ${swappedOut === g ? 'animate-goal-swap-out' : ''}`}
           >
             {goals.includes(g) && <Check className="inline w-3.5 h-3.5 mr-1.5" />}
             {g}
