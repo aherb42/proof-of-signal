@@ -112,7 +112,7 @@ const Profile = () => {
 
         {/* First Signal */}
         {firstSignal && (
-          <div className="bg-card rounded-2xl border border-border p-6">
+          <div className="bg-card rounded-2xl border border-border p-6 mb-8">
             <h2 className="text-lg font-serif text-navy mb-4">Your first signal</h2>
             <p className="text-sm text-foreground italic mb-3">"{firstSignal.text}"</p>
             <div className="flex items-center gap-2">
@@ -121,6 +121,18 @@ const Profile = () => {
             </div>
           </div>
         )}
+
+        {/* Demo Reset */}
+        <div className="border border-dashed border-border rounded-2xl p-6 text-center">
+          <p className="text-sm text-muted-foreground mb-3">Team demo tool</p>
+          <Button
+            variant="outline"
+            onClick={resetToDemo}
+            className="rounded-xl text-muted-foreground hover:text-navy"
+          >
+            <RotateCcw className="w-4 h-4 mr-2" /> Reset to Diana's demo data
+          </Button>
+        </div>
       </div>
     </div>
   );
