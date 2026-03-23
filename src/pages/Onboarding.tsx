@@ -67,8 +67,8 @@ const Onboarding = () => {
   const steps = [
     // OB-01: Welcome
     <div key="welcome" className="flex flex-col items-center text-center animate-fade-in">
-      <div className="w-24 h-24 rounded-full bg-rose-soft flex items-center justify-center mb-8">
-        <div className="w-6 h-6 rounded-full bg-blush" />
+      <div className="w-40 h-28 mb-8">
+        <HeroIllustration />
       </div>
       <h1 className="text-3xl md:text-4xl font-serif text-navy mb-4">Proof of Signal</h1>
       <p className="text-lg text-muted-foreground mb-10">Your career, on record.</p>
