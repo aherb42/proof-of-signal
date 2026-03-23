@@ -19,7 +19,7 @@ const Patterns = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-6 py-10 max-w-2xl">
+      <div className="w-full px-8 md:px-16 lg:px-24 py-10 max-w-[1600px] mx-auto">
         <h1 className="text-3xl font-serif text-navy mb-2">Patterns</h1>
         <p className="text-muted-foreground text-sm mb-10">
           AI-powered insights based on your signals. The more you log, the clearer the picture.
