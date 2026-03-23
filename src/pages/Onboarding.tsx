@@ -47,10 +47,30 @@ const Onboarding = () => {
   const next = () => setStep(s => s + 1);
   const prev = () => setStep(s => s - 1);
 
+  const { toast } = useToast();
+
   const toggleGoal = (g: string) => {
-    setGoals(prev =>
-      prev.includes(g) ? prev.filter(x => x !== g) : prev.length < 2 ? [...prev, g] : prev
-    );
+    setGoals(prev => {
+      if (prev.includes(g)) return prev.filter(x => x !== g);
+      if (prev.length < 2) return [...prev, g];
+      // Replace least-recently-selected (first in array)
+      const replaced = prev[0];
+      const next = [prev[1], g];
+      toast({
+        description: `Replaced "${replaced}" — undo`,
+        action: (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-navy hover:text-navy-light"
+            onClick={() => setGoals([replaced, g])}
+          >
+            Undo
+          </Button>
+        ),
+      });
+      return next;
+    });
   };
 
   const submitSignal = () => {
