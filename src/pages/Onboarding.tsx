@@ -148,7 +148,7 @@ const Onboarding = () => {
     <div key="goals" className="max-w-md w-full animate-fade-in">
       <h2 className="text-2xl font-serif text-navy mb-2">What's most on your mind?</h2>
       <p className="text-sm text-muted-foreground mb-8">
-        Pick up to 2. Not a commitment — just a starting point.
+        Pick up to 2 goals. We'll go from there.
       </p>
       <div className="grid grid-cols-2 gap-2">
         {GOALS.map(g => (
