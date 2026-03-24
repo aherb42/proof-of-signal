@@ -89,7 +89,25 @@ const Dashboard = () => {
 
   const displayedSignals = signals
     .filter(s => !showFlaggedOnly || s.flagged)
-    .filter(s => !selectedAttendee || (s.context?.attendees?.toLowerCase().includes(selectedAttendee.toLowerCase())));
+    .filter(s => !selectedAttendee || (s.context?.attendees?.toLowerCase().includes(selectedAttendee.toLowerCase())))
+    .filter(s => !selectedTag || s.tag === selectedTag)
+    .sort((a, b) => b.date.localeCompare(a.date));
+
+  /** Group signals by month for visual separation. */
+  const groupedSignals = useMemo(() => {
+    const groups: { label: string; signals: typeof displayedSignals }[] = [];
+    let currentLabel = '';
+    for (const signal of displayedSignals) {
+      const label = format(parseISO(signal.date), 'MMMM yyyy');
+      if (label !== currentLabel) {
+        currentLabel = label;
+        groups.push({ label, signals: [signal] });
+      } else {
+        groups[groups.length - 1].signals.push(signal);
+      }
+    }
+    return groups;
+  }, [displayedSignals]);
 
   return (
     <div className="min-h-screen bg-background">
