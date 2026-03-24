@@ -1,9 +1,11 @@
 /**
- * Signal tagger — auto-classifies free-text signals into one of 6 career signal categories.
+ * Signal tagger — classifies free-text signals into one of 6 career signal categories.
  *
- * Uses keyword-frequency scoring with a positive-sentiment override to prevent
- * misclassification when a manager is simply the subject of praise.
+ * Primary: AI-powered classification via the classify-signal edge function.
+ * Fallback: keyword-frequency scoring (used when AI is unavailable).
  */
+
+import { supabase } from '@/integrations/supabase/client';
 
 /** The 6 allowed signal tag values. No other tags should ever be assigned. */
 export const SIGNAL_TAGS = [
@@ -18,7 +20,7 @@ export const SIGNAL_TAGS = [
 /** Union type of valid signal tags. */
 export type SignalTag = typeof SIGNAL_TAGS[number];
 
-/** Keyword lists used for scoring each tag category. */
+/** Keyword lists used for scoring each tag category (fallback only). */
 const KEYWORDS: Record<SignalTag, string[]> = {
   'Recognition': ['mentioned by name', 'credited', 'shoutout', 'acknowledged', 'praised', 'thanked', 'recognized', 'positive feedback', 'called out', 'highlighted', 'referenced my work', 'cited my', 'brought up my', 'liked', 'went well', 'presented well'],
   'Missed Credit': ['picked up by someone else', 'without credit', 'without attribution', 'took credit', 'claimed my', 'presented as their own', 'not credited', 'went unacknowledged', 'my idea', "wasn't credited", 'no mention of me'],
@@ -28,17 +30,10 @@ const KEYWORDS: Record<SignalTag, string[]> = {
   'Personal Milestone': ['first time', 'first cross-functional', 'first roadmap', 'stretch assignment', 'led for the first time', 'took on', 'new responsibility', 'promoted', 'stepped up', 'outside my role', 'beyond my scope'],
 };
 
-/**
- * Positive-sentiment keywords that, when present alongside a Manager Signal match,
- * override the tag to Recognition (the manager is the subject of praise, not a behavioural shift).
- */
 const POSITIVE_SENTIMENT = ['liked', 'praised', 'acknowledged', 'positive feedback', 'went well', 'presented well', 'thanked', 'recognized', 'credited', 'shoutout', 'highlighted'];
 
 /**
- * Auto-classify a free-text signal into the best-matching tag.
- *
- * @param text - The raw signal text entered by the user.
- * @returns The best-matching `SignalTag`. Defaults to `'Personal Milestone'` when no keywords match.
+ * Keyword-based fallback classifier.
  */
 export function autoTag(text: string): SignalTag {
   const lower = text.toLowerCase();
@@ -53,13 +48,36 @@ export function autoTag(text: string): SignalTag {
     }
   }
 
-  // Override: positive observations about a manager → Recognition, not Manager Signal.
   if (bestTag === 'Manager Signal') {
     const hasPositive = POSITIVE_SENTIMENT.some(kw => lower.includes(kw));
-    if (hasPositive) {
-      bestTag = 'Recognition';
-    }
+    if (hasPositive) bestTag = 'Recognition';
   }
 
   return bestTag;
+}
+
+/**
+ * AI-powered signal classifier. Falls back to keyword tagger on error.
+ */
+export async function classifySignal(text: string): Promise<SignalTag> {
+  try {
+    const { data, error } = await supabase.functions.invoke('classify-signal', {
+      body: { text },
+    });
+
+    if (error) {
+      console.warn('AI classification failed, using fallback:', error.message);
+      return autoTag(text);
+    }
+
+    if (data?.tag && SIGNAL_TAGS.includes(data.tag)) {
+      return data.tag as SignalTag;
+    }
+
+    console.warn('Unexpected AI response, using fallback:', data);
+    return autoTag(text);
+  } catch (err) {
+    console.warn('AI classification error, using fallback:', err);
+    return autoTag(text);
+  }
 }
