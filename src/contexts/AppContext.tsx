@@ -1,11 +1,15 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
+export const FLAG_CATEGORIES = ['Promotion evidence', 'Performance review', 'Difficult conversation', 'Watch closely', 'Uncategorized'] as const;
+export type FlagCategory = typeof FLAG_CATEGORIES[number];
+
 export interface Signal {
   id: string;
   text: string;
   date: string;
   tag: string;
   flagged: boolean;
+  flagCategory?: FlagCategory;
   context?: {
     meeting?: string;
     attendees?: string;

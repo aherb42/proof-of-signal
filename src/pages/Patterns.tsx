@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { useApp } from '@/contexts/AppContext';
+import { useApp, FLAG_CATEGORIES, FlagCategory } from '@/contexts/AppContext';
 import { Badge } from '@/components/ui/badge';
 import EmptyState from '@/components/illustrations/EmptyState';
 import { SIGNAL_TAGS } from '@/lib/signalTagger';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const TAG_DEFINITIONS: Record<string, string> = {
   'Recognition': 'Your contribution was acknowledged publicly or privately — a shoutout in a meeting, positive feedback from a stakeholder, or a peer crediting your work.',
@@ -15,8 +16,9 @@ const TAG_DEFINITIONS: Record<string, string> = {
 };
 
 const Patterns = () => {
-  const { signals, user } = useApp();
+  const { signals, user, updateSignal } = useApp();
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
 
   const tagCounts = SIGNAL_TAGS.reduce((acc, tag) => {
     acc[tag] = signals.filter(s => s.tag === tag).length;
@@ -28,6 +30,11 @@ const Patterns = () => {
     .sort((a, b) => b[1] - a[1]);
 
   const totalSignals = signals.length;
+
+  const flaggedSignals = signals.filter(s => s.flagged);
+  const filteredFlagged = categoryFilter === 'all'
+    ? flaggedSignals
+    : flaggedSignals.filter(s => (s.flagCategory || 'Uncategorized') === categoryFilter);
 
   return (
     <div className="min-h-screen bg-background">
@@ -97,19 +104,48 @@ const Patterns = () => {
             </div>
 
             {/* Flagged Review - spans full width */}
-            {signals.filter(s => s.flagged).length > 0 && (
+            {flaggedSignals.length > 0 && (
               <div className="bg-card rounded-2xl border border-border p-6 lg:col-span-2">
-                <h2 className="text-lg font-serif text-navy mb-4">Flagged for review</h2>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-serif text-navy">Flagged for review</h2>
+                  <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                    <SelectTrigger className="w-48 h-8 text-xs">
+                      <SelectValue placeholder="Filter by category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All categories</SelectItem>
+                      {FLAG_CATEGORIES.map(cat => (
+                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div className="space-y-3">
-                  {signals.filter(s => s.flagged).map(s => (
-                    <div key={s.id} className="flex items-start gap-3">
-                      <span className="text-xs text-muted-foreground w-20 flex-shrink-0 pt-0.5">{s.date}</span>
+                  {filteredFlagged.map(s => (
+                    <div key={s.id} className="flex items-center gap-3">
+                      <span className="text-xs text-muted-foreground w-20 flex-shrink-0">{s.date}</span>
                       <p className="text-sm text-foreground line-clamp-1 flex-1">{s.text}</p>
                       <Badge variant="secondary" className="bg-rose-soft text-navy border-0 text-xs flex-shrink-0">
                         {s.tag}
                       </Badge>
+                      <Select
+                        value={s.flagCategory || 'Uncategorized'}
+                        onValueChange={(val) => updateSignal(s.id, { flagCategory: val as FlagCategory })}
+                      >
+                        <SelectTrigger className="w-44 h-7 text-xs">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {FLAG_CATEGORIES.map(cat => (
+                            <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   ))}
+                  {filteredFlagged.length === 0 && (
+                    <p className="text-sm text-muted-foreground text-center py-4">No flagged signals in this category.</p>
+                  )}
                 </div>
               </div>
             )}
