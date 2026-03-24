@@ -1,9 +1,21 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Check, Edit2, RotateCcw } from 'lucide-react';
+import { Check, Edit2, RotateCcw, Trash2 } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 const CAREER_STAGES = [
   'Aspiring PM', 'Associate / Junior PM', 'Product Manager',
@@ -16,7 +28,8 @@ const GOALS = [
 ];
 
 const Profile = () => {
-  const { user, signals, setUser, resetToDemo } = useApp();
+  const { user, signals, setUser, resetToDemo, resetToClean } = useApp();
+  const navigate = useNavigate();
   const [editing, setEditing] = useState(false);
   const [firstName, setFirstName] = useState(user.firstName);
   const [careerStage, setCareerStage] = useState(user.careerStage);
@@ -123,7 +136,7 @@ const Profile = () => {
         )}
 
         {/* Demo Reset */}
-        <div className="border border-dashed border-border rounded-2xl p-6 text-center">
+        <div className="border border-dashed border-border rounded-2xl p-6 text-center space-y-3">
           <p className="text-sm text-muted-foreground mb-3">Team demo tool</p>
           <Button
             variant="outline"
@@ -132,6 +145,39 @@ const Profile = () => {
           >
             <RotateCcw className="w-4 h-4 mr-2" /> Reset to Diana's demo data
           </Button>
+          <div>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs text-muted-foreground hover:text-destructive"
+                >
+                  <Trash2 className="w-3 h-3 mr-1" /> Reset to clean account
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Reset to clean account</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will clear all your signals and settings. Are you sure?
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => {
+                      resetToClean();
+                      navigate('/onboarding');
+                    }}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    Confirm
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
         </div>
       </div>
     </div>
