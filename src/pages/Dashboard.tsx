@@ -13,11 +13,13 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Check, CheckCircle2, Star, Lock, ChevronDown, ChevronUp, Filter, Mic } from 'lucide-react';
+import { Check, CheckCircle2, Star, Lock, ChevronDown, ChevronUp, Filter, Mic, Tag } from 'lucide-react';
 import { useVoiceInput } from '@/hooks/use-voice-input';
 import EmptyState from '@/components/illustrations/EmptyState';
 import SignalCard from '@/components/SignalCard';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+import { format, parseISO } from 'date-fns';
 
 const Dashboard = () => {
   const navigate = useNavigate();
