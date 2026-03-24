@@ -19,9 +19,20 @@ export function useAuth() {
       setLoading(false);
     });
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+    // Restore session, then validate with server to catch revoked tokens
+    supabase.auth.getSession().then(async ({ data: { session: localSession } }) => {
+      if (localSession) {
+        const { data: { user: validUser }, error } = await supabase.auth.getUser();
+        if (error || !validUser) {
+          // Token was revoked server-side — clear local state
+          await supabase.auth.signOut();
+          setSession(null);
+          setUser(null);
+        } else {
+          setSession(localSession);
+          setUser(validUser);
+        }
+      }
       setLoading(false);
     });
 
