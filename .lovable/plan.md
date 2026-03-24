@@ -1,34 +1,73 @@
 
 
-# Make All Pages Full-Width
+# Plan: Add Lovable Cloud Auth + Database Migration (with Demo Mode)
 
-## What Changes
+## Overview
 
-Four pages currently use `container mx-auto max-w-2xl` constraining content to ~672px. Update them to use the same full-width pattern as the landing page (`Index.tsx`): `w-full px-8 md:px-16 lg:px-24` with `max-w-[1600px] mx-auto`.
+Connect to Lovable Cloud, add Google OAuth and magic link auth, migrate data to Supabase, protect routes, and preserve the existing demo mode for troubleshooting without requiring login.
 
-## Pages to Update
+## Demo Mode Strategy
 
-| Page | File | Current constraint |
-|------|------|--------------------|
-| Dashboard | `src/pages/Dashboard.tsx` | `container mx-auto px-6 py-10 max-w-2xl` |
-| Patterns | `src/pages/Patterns.tsx` | `container mx-auto px-6 py-10 max-w-2xl` |
-| Profile | `src/pages/Profile.tsx` | `container mx-auto px-6 py-10 max-w-2xl` |
-| Onboarding | `src/pages/Onboarding.tsx` | `max-w-md` on content (centered — keep this one centered by design) |
+The "Skip to demo" button on the landing page and "Reset to Diana's demo data" on the Profile page will continue to work **without authentication**. Demo mode loads Diana's preset data into AppContext in-memory only (no database writes). This lets anyone explore the dashboard and profile instantly.
 
-**Onboarding** should stay centered since it's a focused step-by-step flow. Only Dashboard, Patterns, and Profile need the full-width treatment.
+```text
+Landing (/)
+  ├─ "Get started"    → /auth → sign in → /onboarding or /dashboard
+  └─ "Skip to demo"   → /dashboard (no auth, in-memory demo data)
+```
 
-## Specific Changes
+## Steps
 
-For Dashboard, Patterns, and Profile, replace the outer content wrapper:
+### 1. Enable Lovable Cloud
+Provision Supabase backend, verify client is available.
 
-**From:** `container mx-auto px-6 py-10 max-w-2xl`
-**To:** `w-full px-8 md:px-16 lg:px-24 py-10 max-w-[1600px] mx-auto`
+### 2. Create database tables (migration)
 
-For Dashboard and Patterns, consider using a two-column grid layout at `lg:` breakpoint to take advantage of the wider space (e.g., form + timeline side by side on Dashboard).
+**profiles**: `id` (uuid PK, FK auth.users), `first_name`, `career_stage`, `goals` (text[]), `onboarding_complete` (bool), `created_at`, `updated_at`
 
-## Prompt to Execute
+**signals**: `id` (uuid PK), `user_id` (uuid FK auth.users, not null), `text`, `date`, `tag`, `flagged`, `flag_category`, `meeting`, `attendees`, `created_at`
 
-> Make Dashboard, Patterns, and Profile pages full-width to match the landing page layout. Replace `container mx-auto px-6 py-10 max-w-2xl` with `w-full px-8 md:px-16 lg:px-24 py-10 max-w-[1600px] mx-auto` in all three files. On Dashboard, use a two-column `lg:grid-cols-2` layout: left column for the checklist + signal form, right column for the timeline. On Patterns, use the full width for the tag distribution bars and insight card. On Profile, spread the content sections across the wider space. Do NOT change Onboarding — it should stay centered. Make all changes in one pass.
+RLS: users read/write only their own rows. Trigger to auto-create profile on signup.
 
-This should take **1 credit** (single message, three file edits).
+### 3. Auth page + auth context
+
+- Create `/auth` page with Google OAuth button and magic link email input, matching existing brand
+- Create `useAuth` hook wrapping `onAuthStateChange` (set up before `getSession()`)
+- Track `session`, `user`, `loading`, `isDemo` state
+
+### 4. Protect routes with demo bypass
+
+- Create `ProtectedRoute` wrapper: allows access if authenticated **or** if `isDemo` is true in AppContext
+- Wrap `/dashboard`, `/profile`, `/patterns`, `/onboarding`
+- Landing (`/`) and `/auth` remain fully public
+
+### 5. Migrate AppContext to dual-mode storage
+
+- **Authenticated mode**: all CRUD operations (addSignal, updateSignal, deleteSignal, setUser, etc.) read/write Supabase tables
+- **Demo mode**: operations stay in-memory (current behavior), no database calls
+- `resetToDemo()`: sets `isDemo = true`, loads Diana's hardcoded data into state, navigates to dashboard — no auth required
+- `resetToClean()`: if authenticated, deletes user's DB rows and resets profile; if demo, clears in-memory state; redirects to onboarding
+- Add `isDemo` flag to AppState so components and ProtectedRoute can check mode
+
+### 6. Update navigation + landing page
+
+- Navbar: show "Sign out" when authenticated; show "Exit demo" when in demo mode (returns to landing)
+- Landing: "Get started" → `/auth`; "Skip to demo" → calls `resetToDemo()` then navigates to `/dashboard`
+- Remove "No account needed yet" copy, replace with "Free to use"
+
+### 7. Verify each step
+
+After each step, confirm it works before proceeding:
+- Step 2: verify tables exist via Supabase
+- Step 3: test Google sign-in and magic link
+- Step 4: confirm protected routes redirect, demo mode bypasses
+- Step 5: confirm signals persist for authenticated users, demo stays in-memory
+- Step 6: confirm nav states for auth vs demo
+
+## Technical Notes
+
+- Demo data (Diana persona + 5 signals) stays hardcoded in `AppContext.tsx` — never written to DB
+- `isDemo` flag resets on page refresh (user lands back on `/`), keeping demo ephemeral
+- Supabase client from `src/integrations/supabase/client.ts` (auto-generated by Lovable Cloud)
+- No localStorage usage after migration — fully removed
 
