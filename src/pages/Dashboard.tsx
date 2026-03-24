@@ -9,11 +9,12 @@ import { Badge } from '@/components/ui/badge';
 import { Check, CheckCircle2, Star, Lock, ChevronDown, ChevronUp, Filter, Mic } from 'lucide-react';
 import { useVoiceInput } from '@/hooks/use-voice-input';
 import EmptyState from '@/components/illustrations/EmptyState';
+import SignalCard from '@/components/SignalCard';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { user, signals, addSignal, updateSignal, toggleFlag } = useApp();
+  const { user, signals, addSignal, updateSignal, deleteSignal, toggleFlag } = useApp();
   const [text, setText] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [showContext, setShowContext] = useState(false);
@@ -266,47 +267,13 @@ const Dashboard = () => {
               ) : (
                 <div className="space-y-3">
                   {displayedSignals.map(signal => (
-                    <div key={signal.id} className="bg-card rounded-xl border border-border p-5 transition-colors hover:border-blush/40">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm text-foreground line-clamp-2 mb-2">{signal.text}</p>
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-xs text-muted-foreground">{signal.date}</span>
-                            {/* Tag with override (SC-02) */}
-                            <Select
-                              value={signal.tag}
-                              onValueChange={val => updateSignal(signal.id, { tag: val })}
-                            >
-                              <SelectTrigger className="h-auto p-0 border-0 shadow-none w-auto">
-                                <Badge variant="secondary" className="bg-rose-soft text-navy border-0 cursor-pointer text-xs">
-                                  {signal.tag}
-                                </Badge>
-                              </SelectTrigger>
-                              <SelectContent>
-                                {SIGNAL_TAGS.map(t => (
-                                  <SelectItem key={t} value={t}>{t}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            {signal.context?.meeting && (
-                              <span className="text-xs text-muted-foreground">📍 {signal.context.meeting}</span>
-                            )}
-                            {signal.context?.attendees && (
-                              <span className="text-xs text-muted-foreground">👥 {signal.context.attendees}</span>
-                            )}
-                          </div>
-                        </div>
-                        {/* Flag (SC-05) */}
-                        <button
-                          onClick={() => toggleFlag(signal.id)}
-                          className="flex-shrink-0 p-1 transition-colors"
-                        >
-                          <Star
-                            className={`w-4 h-4 ${signal.flagged ? 'fill-navy text-navy' : 'text-muted-foreground/30 hover:text-muted-foreground'}`}
-                          />
-                        </button>
-                      </div>
-                    </div>
+                    <SignalCard
+                      key={signal.id}
+                      signal={signal}
+                      onUpdate={updateSignal}
+                      onDelete={deleteSignal}
+                      onToggleFlag={toggleFlag}
+                    />
                   ))}
                 </div>
               )}
