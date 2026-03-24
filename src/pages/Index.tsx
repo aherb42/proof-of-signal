@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, CheckCircle2 } from 'lucide-react';
-import HeroIllustration from '@/components/illustrations/HeroIllustration';
+import HeroComposition from '@/components/illustrations/HeroComposition';
 import FeatureIcon from '@/components/illustrations/FeatureIcons';
 import AvatarSilhouettes from '@/components/illustrations/AvatarSilhouettes';
 import SignalWavePattern from '@/components/illustrations/SignalWavePattern';
@@ -83,7 +83,7 @@ const Index = () => {
               </div>
             </div>
             <div className="hidden lg:flex justify-center animate-fade-in" style={{ animationDelay: '0.2s' }}>
-              <HeroIllustration />
+              <HeroComposition />
             </div>
           </div>
         </div>
