@@ -13,10 +13,10 @@ const HeroIllustration = () => (
       @keyframes nodeFloat3 { 0% { transform: translate(0,0); } 50% { transform: translate(-2px, 5px); } 100% { transform: translate(0,0); } }
       @keyframes spinCW { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       @keyframes spinCCW { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
-      .ring1 { animation: ripple1 3s ease-in-out infinite, spinCW 6s linear infinite; transform-origin: 300px 200px; }
-      .ring2 { animation: ripple2 3s ease-in-out infinite 0.4s, spinCW 8s linear infinite; transform-origin: 300px 200px; }
-      .ring3 { animation: ripple3 3s ease-in-out infinite 0.8s, spinCCW 10s linear infinite; transform-origin: 300px 200px; }
-      .ring4 { animation: ripple4 3s ease-in-out infinite 1.2s, spinCCW 12s linear infinite; transform-origin: 300px 200px; }
+      .ring1 { animation: ripple1 3s ease-in-out infinite, spinCW 3s linear infinite; transform-origin: 300px 200px; }
+      .ring2 { animation: ripple2 3s ease-in-out infinite 0.4s, spinCW 4s linear infinite; transform-origin: 300px 200px; }
+      .ring3 { animation: ripple3 3s ease-in-out infinite 0.8s, spinCCW 5s linear infinite; transform-origin: 300px 200px; }
+      .ring4 { animation: ripple4 3s ease-in-out infinite 1.2s, spinCCW 6s linear infinite; transform-origin: 300px 200px; }
       .core { animation: corePulse 2s ease-in-out infinite; }
       .core-glow { animation: coreGlow 2s ease-in-out infinite; }
       .float1 { animation: nodeFloat1 4s ease-in-out infinite; }
