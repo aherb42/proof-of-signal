@@ -13,11 +13,13 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Check, CheckCircle2, Star, Lock, ChevronDown, ChevronUp, Filter, Mic } from 'lucide-react';
+import { Check, CheckCircle2, Star, Lock, ChevronDown, ChevronUp, Filter, Mic, Tag } from 'lucide-react';
 import { useVoiceInput } from '@/hooks/use-voice-input';
 import EmptyState from '@/components/illustrations/EmptyState';
 import SignalCard from '@/components/SignalCard';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+import { format, parseISO } from 'date-fns';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -31,6 +33,7 @@ const Dashboard = () => {
   const [lastTag, setLastTag] = useState('');
   const [showFlaggedOnly, setShowFlaggedOnly] = useState(false);
   const [selectedAttendee, setSelectedAttendee] = useState<string | null>(null);
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const { supported: voiceSupported, listening, toggle: toggleVoice } = useVoiceInput((transcript) => {
     setText(prev => prev ? `${prev} ${transcript}`.slice(0, 500) : transcript.slice(0, 500));
   });
@@ -86,7 +89,25 @@ const Dashboard = () => {
 
   const displayedSignals = signals
     .filter(s => !showFlaggedOnly || s.flagged)
-    .filter(s => !selectedAttendee || (s.context?.attendees?.toLowerCase().includes(selectedAttendee.toLowerCase())));
+    .filter(s => !selectedAttendee || (s.context?.attendees?.toLowerCase().includes(selectedAttendee.toLowerCase())))
+    .filter(s => !selectedTag || s.tag === selectedTag)
+    .sort((a, b) => b.date.localeCompare(a.date));
+
+  /** Group signals by month for visual separation. */
+  const groupedSignals = useMemo(() => {
+    const groups: { label: string; signals: typeof displayedSignals }[] = [];
+    let currentLabel = '';
+    for (const signal of displayedSignals) {
+      const label = format(parseISO(signal.date), 'MMMM yyyy');
+      if (label !== currentLabel) {
+        currentLabel = label;
+        groups.push({ label, signals: [signal] });
+      } else {
+        groups[groups.length - 1].signals.push(signal);
+      }
+    }
+    return groups;
+  }, [displayedSignals]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -248,6 +269,22 @@ const Dashboard = () => {
               <div className="flex items-center gap-3 mb-4 flex-wrap">
                 <h2 className="text-lg font-serif text-navy">Your signals</h2>
                 <div className="flex items-center gap-2 ml-auto flex-wrap">
+                  {/* Tag filter */}
+                  <Select
+                    value={selectedTag || 'all'}
+                    onValueChange={val => setSelectedTag(val === 'all' ? null : val)}
+                  >
+                    <SelectTrigger className="h-8 w-[160px] text-xs rounded-full border-border">
+                      <Tag className="w-3.5 h-3.5 mr-1.5 text-muted-foreground" />
+                      <SelectValue placeholder="All tags" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All tags</SelectItem>
+                      {SIGNAL_TAGS.map(tag => (
+                        <SelectItem key={tag} value={tag}>{tag}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   {allAttendees.length > 0 && (
                     <div className="flex items-center gap-1.5 flex-wrap">
                       {allAttendees.map(name => (
@@ -279,19 +316,29 @@ const Dashboard = () => {
 
               {displayedSignals.length === 0 ? (
                 <EmptyState
-                  title={showFlaggedOnly ? 'No flagged signals' : 'No signals yet'}
-                  description={showFlaggedOnly ? 'Flag signals you want to revisit for reviews.' : 'Log your first signal above to start building your record.'}
+                  title={showFlaggedOnly || selectedTag ? 'No matching signals' : 'No signals yet'}
+                  description={showFlaggedOnly || selectedTag ? 'Try adjusting your filters.' : 'Log your first signal above to start building your record.'}
                 />
               ) : (
-                <div className="space-y-3">
-                  {displayedSignals.map(signal => (
-                    <SignalCard
-                      key={signal.id}
-                      signal={signal}
-                      onUpdate={updateSignal}
-                      onDelete={deleteSignal}
-                      onToggleFlag={toggleFlag}
-                    />
+                <div className="space-y-6">
+                  {groupedSignals.map(group => (
+                    <div key={group.label}>
+                      <div className="flex items-center gap-3 mb-3">
+                        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{group.label}</span>
+                        <Separator className="flex-1" />
+                      </div>
+                      <div className="space-y-3">
+                        {group.signals.map(signal => (
+                          <SignalCard
+                            key={signal.id}
+                            signal={signal}
+                            onUpdate={updateSignal}
+                            onDelete={deleteSignal}
+                            onToggleFlag={toggleFlag}
+                          />
+                        ))}
+                      </div>
+                    </div>
                   ))}
                 </div>
               )}
