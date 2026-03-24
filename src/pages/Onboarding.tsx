@@ -34,7 +34,7 @@ const Onboarding = () => {
   const { user, setUser, addSignal } = useApp();
   const navigate = useNavigate();
 
-  const [firstName, setFirstName] = useState(user.firstName);
+  const [firstName, setFirstName] = useState('');
   const [careerStage, setCareerStage] = useState(user.careerStage);
   const [goals, setGoals] = useState<string[]>([]);
   const [signalText, setSignalText] = useState('');
