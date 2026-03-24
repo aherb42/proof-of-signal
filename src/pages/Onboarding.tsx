@@ -216,10 +216,13 @@ const Onboarding = () => {
               <button
                 type="button"
                 onClick={toggleVoice}
-                className="absolute top-3 right-3 p-1.5 rounded-lg transition-colors"
+                className={`absolute top-3 right-3 p-1.5 rounded-lg transition-colors ${listening ? 'bg-destructive/10 hover:bg-destructive/20' : ''}`}
+                title={listening ? 'Stop recording' : 'Start voice input'}
               >
                 {listening ? (
-                  <span className="text-xs font-medium text-navy animate-pulse">Listening…</span>
+                  <span className="flex items-center gap-1 text-xs font-medium text-destructive animate-pulse">
+                    <MicOff className="w-4 h-4" /> Stop
+                  </span>
                 ) : (
                   <Mic className="w-4 h-4 text-muted-foreground hover:text-navy" />
                 )}
