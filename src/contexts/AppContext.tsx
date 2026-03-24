@@ -145,6 +145,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const resetToClean = () => {
+    localStorage.removeItem(STORAGE_KEY);
     setState({ user: defaultUser, signals: [] });
   };
 
