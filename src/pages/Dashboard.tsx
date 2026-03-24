@@ -54,7 +54,7 @@ const Dashboard = () => {
         {/* Header */}
         <div className="mb-10">
           <h1 className="text-3xl font-serif text-navy mb-1">
-            {user.firstName ? `Welcome back, ${user.firstName}` : 'Your Dashboard'}
+            {user.firstName ? (signals.length >= 2 ? `Welcome back, ${user.firstName}` : `Welcome, ${user.firstName}`) : 'Your Dashboard'}
           </h1>
           <p className="text-muted-foreground text-sm">Your signal record at a glance.</p>
         </div>
