@@ -1,10 +1,13 @@
 /**
  * AppContext — global application state provider.
  *
- * Manages user profile, signal list, and persistence to localStorage.
- * All storage reads/writes are centralised in `loadState` and `saveState`.
+ * Dual-mode storage:
+ *  - Demo mode: in-memory only (no DB writes), Diana's preset data
+ *  - Authenticated mode: reads/writes to Supabase profiles + signals tables
  */
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import type { User } from '@supabase/supabase-js';
 
 /** Categories that can be assigned to flagged signals for review. */
 export const FLAG_CATEGORIES = ['Promotion evidence', 'Performance review', 'Difficult conversation', 'Watch closely', 'Uncategorized'] as const;
@@ -35,6 +38,8 @@ export interface UserProfile {
 interface AppState {
   user: UserProfile;
   signals: Signal[];
+  isDemo: boolean;
+  loading: boolean;
   setUser: (user: Partial<UserProfile>) => void;
   addSignal: (signal: Omit<Signal, 'id'>) => void;
   updateSignal: (id: string, updates: Partial<Signal>) => void;
@@ -42,6 +47,7 @@ interface AppState {
   toggleFlag: (id: string) => void;
   resetToDemo: () => void;
   resetToClean: () => void;
+  loadUserData: (authUser: User) => Promise<void>;
 }
 
 const defaultUser: UserProfile = {
@@ -98,80 +104,190 @@ const demoSignals: Signal[] = [
 
 const AppContext = createContext<AppState | undefined>(undefined);
 
-/** LocalStorage key for all persisted app data. */
-const STORAGE_KEY = 'proof-of-signal';
-
-/** Load persisted state from localStorage. Falls back to demo data on first visit or parse error. */
-function loadState(): { user: UserProfile; signals: Signal[] } {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch {
-    // Corrupted storage — fall through to defaults
-  }
-  return { user: demoUser, signals: demoSignals };
-}
-
-/** Persist current state to localStorage. Silently catches write errors. */
-function saveState(user: UserProfile, signals: Signal[]) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ user, signals }));
-  } catch {
-    // Storage full or unavailable — silently degrade
-  }
+/** Convert a Supabase signal row to our Signal interface. */
+function rowToSignal(row: any): Signal {
+  return {
+    id: row.id,
+    text: row.text,
+    date: row.date,
+    tag: row.tag,
+    flagged: row.flagged,
+    flagCategory: row.flag_category || undefined,
+    context: (row.meeting || row.attendees)
+      ? { meeting: row.meeting || undefined, attendees: row.attendees || undefined }
+      : undefined,
+  };
 }
 
 /** Provides global app state (user + signals) to the component tree. */
 export const AppProvider = ({ children }: { children: ReactNode }) => {
-  const [state, setState] = useState(loadState);
+  const [user, setUserState] = useState<UserProfile>(defaultUser);
+  const [signals, setSignals] = useState<Signal[]>([]);
+  const [isDemo, setIsDemo] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [authUser, setAuthUser] = useState<User | null>(null);
 
+  /** Load profile + signals from Supabase for the authenticated user. */
+  const loadUserData = useCallback(async (au: User) => {
+    setAuthUser(au);
+    setIsDemo(false);
+    setLoading(true);
+    try {
+      // Load profile
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', au.id)
+        .single();
+
+      if (profile) {
+        setUserState({
+          firstName: profile.first_name,
+          careerStage: profile.career_stage,
+          goals: profile.goals || [],
+          onboardingComplete: profile.onboarding_complete,
+        });
+      }
+
+      // Load signals
+      const { data: sigs } = await supabase
+        .from('signals')
+        .select('*')
+        .eq('user_id', au.id)
+        .order('created_at', { ascending: false });
+
+      setSignals(sigs ? sigs.map(rowToSignal) : []);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Listen for auth changes
   useEffect(() => {
-    saveState(state.user, state.signals);
-  }, [state]);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        // Use setTimeout to avoid potential Supabase deadlock
+        setTimeout(() => loadUserData(session.user), 0);
+      } else {
+        setAuthUser(null);
+        if (!isDemo) {
+          setUserState(defaultUser);
+          setSignals([]);
+        }
+      }
+    });
 
-  const setUser = (updates: Partial<UserProfile>) => {
-    setState(prev => ({ ...prev, user: { ...prev.user, ...updates } }));
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        loadUserData(session.user);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const setUser = async (updates: Partial<UserProfile>) => {
+    const newUser = { ...user, ...updates };
+    setUserState(newUser);
+
+    if (authUser && !isDemo) {
+      await supabase.from('profiles').update({
+        first_name: newUser.firstName,
+        career_stage: newUser.careerStage,
+        goals: newUser.goals,
+        onboarding_complete: newUser.onboardingComplete,
+      }).eq('id', authUser.id);
+    }
   };
 
-  const addSignal = (signal: Omit<Signal, 'id'>) => {
-    const newSignal: Signal = { ...signal, id: crypto.randomUUID() };
-    setState(prev => ({ ...prev, signals: [newSignal, ...prev.signals] }));
+  const addSignal = async (signal: Omit<Signal, 'id'>) => {
+    if (authUser && !isDemo) {
+      const { data, error } = await supabase.from('signals').insert({
+        user_id: authUser.id,
+        text: signal.text,
+        date: signal.date,
+        tag: signal.tag,
+        flagged: signal.flagged,
+        flag_category: signal.flagCategory || null,
+        meeting: signal.context?.meeting || null,
+        attendees: signal.context?.attendees || null,
+      }).select().single();
+
+      if (data && !error) {
+        setSignals(prev => [rowToSignal(data), ...prev]);
+      }
+    } else {
+      const newSignal: Signal = { ...signal, id: crypto.randomUUID() };
+      setSignals(prev => [newSignal, ...prev]);
+    }
   };
 
-  const updateSignal = (id: string, updates: Partial<Signal>) => {
-    setState(prev => ({
-      ...prev,
-      signals: prev.signals.map(s => s.id === id ? { ...s, ...updates } : s),
-    }));
+  const updateSignal = async (id: string, updates: Partial<Signal>) => {
+    setSignals(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
+
+    if (authUser && !isDemo) {
+      const dbUpdates: any = {};
+      if (updates.text !== undefined) dbUpdates.text = updates.text;
+      if (updates.date !== undefined) dbUpdates.date = updates.date;
+      if (updates.tag !== undefined) dbUpdates.tag = updates.tag;
+      if (updates.flagged !== undefined) dbUpdates.flagged = updates.flagged;
+      if (updates.flagCategory !== undefined) dbUpdates.flag_category = updates.flagCategory;
+      if (updates.context !== undefined) {
+        dbUpdates.meeting = updates.context.meeting || null;
+        dbUpdates.attendees = updates.context.attendees || null;
+      }
+      await supabase.from('signals').update(dbUpdates).eq('id', id);
+    }
   };
 
-  const toggleFlag = (id: string) => {
-    setState(prev => ({
-      ...prev,
-      signals: prev.signals.map(s => s.id === id ? { ...s, flagged: !s.flagged } : s),
-    }));
+  const toggleFlag = async (id: string) => {
+    const signal = signals.find(s => s.id === id);
+    if (!signal) return;
+    const newFlagged = !signal.flagged;
+    setSignals(prev => prev.map(s => s.id === id ? { ...s, flagged: newFlagged } : s));
+
+    if (authUser && !isDemo) {
+      await supabase.from('signals').update({ flagged: newFlagged }).eq('id', id);
+    }
   };
 
-  const deleteSignal = (id: string) => {
-    setState(prev => ({
-      ...prev,
-      signals: prev.signals.filter(s => s.id !== id),
-    }));
+  const deleteSignal = async (id: string) => {
+    setSignals(prev => prev.filter(s => s.id !== id));
+
+    if (authUser && !isDemo) {
+      await supabase.from('signals').delete().eq('id', id);
+    }
   };
 
-  /** Load the built-in Diana demo dataset. */
+  /** Load the built-in Diana demo dataset (in-memory only). */
   const resetToDemo = () => {
-    setState({ user: demoUser, signals: demoSignals });
+    setIsDemo(true);
+    setUserState(demoUser);
+    setSignals(demoSignals);
   };
 
-  /** Wipe all data and return to a fresh-install state. */
-  const resetToClean = () => {
-    localStorage.removeItem(STORAGE_KEY);
-    setState({ user: defaultUser, signals: [] });
+  /** Wipe all data and return to a fresh state. */
+  const resetToClean = async () => {
+    if (authUser && !isDemo) {
+      await supabase.from('signals').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+      await supabase.from('profiles').update({
+        first_name: '',
+        career_stage: '',
+        goals: [],
+        onboarding_complete: false,
+      }).eq('id', authUser.id);
+    }
+    setIsDemo(false);
+    setUserState(defaultUser);
+    setSignals([]);
   };
 
   return (
-    <AppContext.Provider value={{ ...state, setUser, addSignal, updateSignal, deleteSignal, toggleFlag, resetToDemo, resetToClean }}>
+    <AppContext.Provider value={{
+      user, signals, isDemo, loading,
+      setUser, addSignal, updateSignal, deleteSignal, toggleFlag,
+      resetToDemo, resetToClean, loadUserData,
+    }}>
       {children}
     </AppContext.Provider>
   );

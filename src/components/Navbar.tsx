@@ -1,9 +1,13 @@
 /**
  * Navbar — top navigation bar.
- * Hidden on the landing page and during onboarding. Shows Dashboard, Profile, and Patterns links.
+ * Hidden on the landing page, auth page, and during onboarding.
+ * Shows Dashboard, Profile, Patterns links + Sign out / Exit demo.
  */
-import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, User, TrendingUp } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, User, TrendingUp, LogOut } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { useApp } from '@/contexts/AppContext';
+import { Button } from '@/components/ui/button';
 
 const navItems = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -13,12 +17,24 @@ const navItems = [
 
 const Navbar = () => {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const { signOut } = useAuth();
+  const { isDemo } = useApp();
 
-  if (pathname === '/' || pathname.startsWith('/onboarding')) return null;
+  if (pathname === '/' || pathname === '/auth' || pathname.startsWith('/onboarding')) return null;
+
+  const handleExit = async () => {
+    if (isDemo) {
+      navigate('/');
+    } else {
+      await signOut();
+      navigate('/');
+    }
+  };
 
   return (
     <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
-      <div className="container mx-auto px-6 max-w-2xl">
+      <div className="w-full px-8 md:px-16 lg:px-24 max-w-[1600px] mx-auto">
         <div className="flex items-center justify-between h-14">
           <Link to="/" className="text-sm font-serif text-navy font-semibold">
             Proof of Signal
@@ -40,6 +56,15 @@ const Navbar = () => {
                 </Link>
               );
             })}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleExit}
+              className="ml-2 text-xs text-muted-foreground hover:text-foreground"
+            >
+              <LogOut className="w-3.5 h-3.5 mr-1" />
+              <span className="hidden sm:inline">{isDemo ? 'Exit demo' : 'Sign out'}</span>
+            </Button>
           </div>
         </div>
       </div>
