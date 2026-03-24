@@ -51,6 +51,21 @@ const Dashboard = () => {
 
   const showInsight = signalCount >= 3;
 
+  const topTheme = useMemo(() => {
+    const counts: Record<string, number> = {};
+    signals.forEach(s => { counts[s.tag] = (counts[s.tag] || 0) + 1; });
+    return Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0] || '';
+  }, [signals]);
+
+  const THEME_INSIGHTS: Record<string, string> = {
+    'Recognition': "You're being seen at the right levels. The question now is whether your manager is connecting these moments to your readiness for the next step.",
+    'Missed Credit': "A pattern worth watching: your contributions are landing, but the attribution isn't always following. That gap is worth naming — especially before a performance conversation.",
+    'Manager Signal': "Your signals suggest a shift in your manager dynamic. Whether it's positive or concerning, it's worth paying attention to before your next 1:1.",
+    'Constructive Feedback': "You're getting input. The question is whether you're capturing it in a way that shows growth over time — not just in the moment.",
+    'Personal Milestone': "You're stepping up. Make sure these moments are on record — they're the evidence your promotion conversation needs.",
+    'Org / Political Signal': "You're picking up on organizational dynamics early. That awareness is an asset — especially if you're navigating a shift in team or leadership.",
+  };
+
   // Extract unique attendees from all signals
   const allAttendees = useMemo(() => {
     const names = new Set<string>();
@@ -216,8 +231,7 @@ const Dashboard = () => {
                       </div>
                     ) : (
                       <p className="text-sm text-foreground leading-relaxed">
-                        You've logged {signalCount} signals so far. As patterns emerge, you'll see personalized insights here — 
-                        themes in your experiences, and prompts to help you reflect and act.
+                        {THEME_INSIGHTS[topTheme] || `You've logged ${signalCount} signals so far. As patterns emerge, you'll see personalized insights here.`}
                       </p>
                     )}
                   </div>
