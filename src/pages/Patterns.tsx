@@ -94,9 +94,17 @@ const Patterns = () => {
                     </div>
                   ) : (
                     <p className="text-sm text-foreground leading-relaxed">
-                      Based on your {totalSignals} signals, your most frequent theme is <strong>{topTags[0]?.[0]}</strong>. 
-                      As you continue logging, we'll surface more specific patterns — like whether certain types of moments 
-                      cluster around particular meetings, stakeholders, or times of the quarter.
+                      {(() => {
+                        const themeInsights: Record<string, string> = {
+                          'Recognition': "You're being seen at the right levels. The question now is whether your manager is connecting these moments to your readiness for the next step.",
+                          'Missed Credit': "A pattern worth watching: your contributions are landing, but the attribution isn't always following. That gap is worth naming — especially before a performance conversation.",
+                          'Manager Signal': "Your signals suggest a shift in your manager dynamic. Whether it's positive or concerning, it's worth paying attention to before your next 1:1.",
+                          'Constructive Feedback': "You're getting input. The question is whether you're capturing it in a way that shows growth over time — not just in the moment.",
+                          'Personal Milestone': "You're stepping up. Make sure these moments are on record — they're the evidence your promotion conversation needs.",
+                          'Org / Political Signal': "You're picking up on organizational dynamics early. That awareness is an asset — especially if you're navigating a shift in team or leadership.",
+                        };
+                        return themeInsights[topTags[0]?.[0]] || `Based on your ${totalSignals} signals, patterns are emerging.`;
+                      })()}
                     </p>
                   )}
                 </div>
