@@ -64,7 +64,7 @@ const Index = () => {
               <div className="flex flex-wrap gap-4">
                 <Button
                   size="lg"
-                  onClick={() => navigate('/onboarding')}
+                  onClick={() => navigate('/auth')}
                   className="bg-accent hover:bg-accent/90 text-accent-foreground px-10 py-7 text-lg rounded-2xl shadow-lg shadow-accent/25 transition-all hover:shadow-xl hover:shadow-accent/30 hover:-translate-y-0.5"
                 >
                   Get started <ArrowRight className="ml-2 w-5 h-5" />
@@ -156,14 +156,14 @@ const Index = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-10">
             <Button
               size="lg"
-              onClick={() => navigate('/onboarding')}
+              onClick={() => navigate('/auth')}
               className="bg-accent hover:bg-accent/90 text-accent-foreground px-10 py-7 text-lg rounded-2xl shadow-lg shadow-accent/30 transition-all hover:shadow-xl hover:-translate-y-0.5"
             >
               Get started — it's free <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
           </div>
           <div className="flex items-center justify-center gap-8 text-primary-foreground/60 text-sm">
-            <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4" /> No account needed yet</span>
+            <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4" /> Free to use</span>
             <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4" /> Takes 2 minutes</span>
           </div>
         </div>
