@@ -14,7 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          career_stage: string
+          created_at: string
+          first_name: string
+          goals: string[]
+          id: string
+          onboarding_complete: boolean
+          updated_at: string
+        }
+        Insert: {
+          career_stage?: string
+          created_at?: string
+          first_name?: string
+          goals?: string[]
+          id: string
+          onboarding_complete?: boolean
+          updated_at?: string
+        }
+        Update: {
+          career_stage?: string
+          created_at?: string
+          first_name?: string
+          goals?: string[]
+          id?: string
+          onboarding_complete?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      signals: {
+        Row: {
+          attendees: string | null
+          created_at: string
+          date: string
+          flag_category: string | null
+          flagged: boolean
+          id: string
+          meeting: string | null
+          tag: string
+          text: string
+          user_id: string
+        }
+        Insert: {
+          attendees?: string | null
+          created_at?: string
+          date?: string
+          flag_category?: string | null
+          flagged?: boolean
+          id?: string
+          meeting?: string | null
+          tag?: string
+          text: string
+          user_id: string
+        }
+        Update: {
+          attendees?: string | null
+          created_at?: string
+          date?: string
+          flag_category?: string | null
+          flagged?: boolean
+          id?: string
+          meeting?: string | null
+          tag?: string
+          text?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
