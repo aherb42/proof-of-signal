@@ -1,3 +1,4 @@
+/** SignalWavePattern — decorative SVG wave used as a section divider on the landing page. */
 const SignalWavePattern = ({ className = '' }: { className?: string }) => (
   <svg viewBox="0 0 1200 120" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} preserveAspectRatio="none">
     <path

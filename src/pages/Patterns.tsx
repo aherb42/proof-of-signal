@@ -1,19 +1,17 @@
+/**
+ * Patterns — AI-powered insights view.
+ *
+ * Displays signal theme distribution, contextual insight copy based on dominant theme,
+ * clickable tag definitions, and a categorised flagged-signal review section.
+ */
 import { useState } from 'react';
 import { useApp, FLAG_CATEGORIES, FlagCategory } from '@/contexts/AppContext';
 import { Badge } from '@/components/ui/badge';
 import EmptyState from '@/components/illustrations/EmptyState';
 import { SIGNAL_TAGS } from '@/lib/signalTagger';
+import { TAG_DEFINITIONS, THEME_INSIGHTS } from '@/lib/constants';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-
-const TAG_DEFINITIONS: Record<string, string> = {
-  'Recognition': 'Your contribution was acknowledged publicly or privately — a shoutout in a meeting, positive feedback from a stakeholder, or a peer crediting your work.',
-  'Missed Credit': 'Your idea, work, or contribution was attributed to someone else, or went unacknowledged entirely. Can be subtle — worth noting even when you\'re not sure.',
-  'Constructive Feedback': 'Input you received about an area to develop or improve. Includes formal feedback, informal coaching, or repeated observations from others.',
-  'Manager Signal': 'A shift in your manager\'s behavior, tone, or attention toward you — shorter 1:1s, change in communication style, new visibility or reduced access.',
-  'Org / Political Signal': 'An organizational dynamic worth tracking — restructuring, budget signals, stakeholder shifts, or changes in team direction that affect your position.',
-  'Personal Milestone': 'A meaningful moment in your own career progression — first time leading something, a stretch assignment, a door that opened.',
-};
 
 const Patterns = () => {
   const { signals, user, updateSignal } = useApp();
@@ -94,24 +92,14 @@ const Patterns = () => {
                     </div>
                   ) : (
                     <p className="text-sm text-foreground leading-relaxed">
-                      {(() => {
-                        const themeInsights: Record<string, string> = {
-                          'Recognition': "You're being seen at the right levels. The question now is whether your manager is connecting these moments to your readiness for the next step.",
-                          'Missed Credit': "A pattern worth watching: your contributions are landing, but the attribution isn't always following. That gap is worth naming — especially before a performance conversation.",
-                          'Manager Signal': "Your signals suggest a shift in your manager dynamic. Whether it's positive or concerning, it's worth paying attention to before your next 1:1.",
-                          'Constructive Feedback': "You're getting input. The question is whether you're capturing it in a way that shows growth over time — not just in the moment.",
-                          'Personal Milestone': "You're stepping up. Make sure these moments are on record — they're the evidence your promotion conversation needs.",
-                          'Org / Political Signal': "You're picking up on organizational dynamics early. That awareness is an asset — especially if you're navigating a shift in team or leadership.",
-                        };
-                        return themeInsights[topTags[0]?.[0]] || `Based on your ${totalSignals} signals, patterns are emerging.`;
-                      })()}
+                      {THEME_INSIGHTS[topTags[0]?.[0]] || `Based on your ${totalSignals} signals, patterns are emerging.`}
                     </p>
                   )}
                 </div>
               </div>
             </div>
 
-            {/* Flagged Review - spans full width */}
+            {/* Flagged Review — spans full width */}
             {flaggedSignals.length > 0 && (
               <div className="bg-card rounded-2xl border border-border p-6 lg:col-span-2">
                 <div className="flex items-center justify-between mb-4">

@@ -1,3 +1,7 @@
+/**
+ * NavLink — wrapper around React Router's `NavLink` with `cn()` class merging
+ * and separate `activeClassName` / `pendingClassName` props.
+ */
 import { NavLink as RouterNavLink, NavLinkProps } from "react-router-dom";
 import { forwardRef } from "react";
 import { cn } from "@/lib/utils";

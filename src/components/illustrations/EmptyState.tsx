@@ -1,3 +1,9 @@
+/**
+ * EmptyState — placeholder illustration shown when a list has no items.
+ *
+ * @param title - Bold heading text.
+ * @param description - Supporting body copy.
+ */
 import { FileText } from 'lucide-react';
 
 interface EmptyStateProps {

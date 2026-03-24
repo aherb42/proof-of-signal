@@ -1,3 +1,8 @@
+/**
+ * FeatureIcon — icon badge used in the landing page feature cards.
+ *
+ * @param type - Which feature to render: `'capture'`, `'patterns'`, or `'growth'`.
+ */
 import { BookOpen, Compass, Network } from 'lucide-react';
 
 interface FeatureIconProps {
