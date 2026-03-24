@@ -36,7 +36,7 @@ const Onboarding = () => {
 
   const [firstName, setFirstName] = useState(user.firstName);
   const [careerStage, setCareerStage] = useState(user.careerStage);
-  const [goals, setGoals] = useState<string[]>(user.goals);
+  const [goals, setGoals] = useState<string[]>([]);
   const [signalText, setSignalText] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [assignedTag, setAssignedTag] = useState('');
