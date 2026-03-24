@@ -1,8 +1,9 @@
 /**
- * Auth — sign-in page with Google OAuth and magic link.
+ * Auth — dual-mode page supporting Create Account (signup) and Sign In (login).
+ * Redirects authenticated users based on onboarding status.
  */
-import { useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Navigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useApp } from '@/contexts/AppContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -12,18 +13,63 @@ import { Input } from '@/components/ui/input';
 import { ArrowRight, Mail, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
+type AuthMode = 'signup' | 'login';
+
 const Auth = () => {
   const { user, loading } = useAuth();
   const { isDemo } = useApp();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+
+  const [mode, setMode] = useState<AuthMode>(
+    searchParams.get('mode') === 'login' ? 'login' : 'signup'
+  );
   const [email, setEmail] = useState('');
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [redirectPath, setRedirectPath] = useState<string | null>(null);
+  const [checkingProfile, setCheckingProfile] = useState(false);
 
-  // If already authenticated, redirect
-  if (!loading && user) {
-    return <Navigate to="/dashboard" replace />;
+  // When user becomes authenticated, check onboarding status to determine redirect
+  useEffect(() => {
+    if (!user || loading) return;
+
+    const checkOnboarding = async () => {
+      setCheckingProfile(true);
+      try {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('onboarding_complete')
+          .eq('id', user.id)
+          .single();
+
+        if (profile?.onboarding_complete) {
+          // If user came through signup mode but is already onboarded, notify them
+          if (mode === 'signup') {
+            toast({
+              title: 'Welcome back!',
+              description: "Looks like you already have an account — we've signed you in.",
+            });
+          }
+          setRedirectPath('/dashboard');
+        } else {
+          setRedirectPath('/onboarding');
+        }
+      } catch {
+        // Profile not found yet (trigger may be pending), default to onboarding
+        setRedirectPath('/onboarding');
+      } finally {
+        setCheckingProfile(false);
+      }
+    };
+
+    checkOnboarding();
+  }, [user, loading]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Redirect once path is determined
+  if (redirectPath) {
+    return <Navigate to={redirectPath} replace />;
   }
 
   const handleGoogleSignIn = async () => {
@@ -57,7 +103,7 @@ const Auth = () => {
     }
   };
 
-  if (loading) {
+  if (loading || checkingProfile) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
@@ -65,13 +111,21 @@ const Auth = () => {
     );
   }
 
+  const isSignup = mode === 'signup';
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-6">
       <div className="w-full max-w-sm space-y-8 animate-fade-in">
         <div className="text-center">
           <p className="text-sm font-bold tracking-[0.25em] uppercase text-accent mb-3">Proof of Signal</p>
-          <h1 className="text-3xl font-serif text-primary mb-2">Welcome back</h1>
-          <p className="text-muted-foreground text-sm">Sign in to access your signal record.</p>
+          <h1 className="text-3xl font-serif text-primary mb-2">
+            {isSignup ? 'Create your account' : 'Welcome back'}
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            {isSignup
+              ? 'Start building your signal record.'
+              : 'Sign in to access your signal record.'}
+          </p>
         </div>
 
         {/* Google OAuth */}
@@ -132,6 +186,31 @@ const Auth = () => {
             </Button>
           </div>
         )}
+
+        {/* Mode toggle footer */}
+        <p className="text-center text-sm text-muted-foreground">
+          {isSignup ? (
+            <>
+              Already have an account?{' '}
+              <button
+                onClick={() => setMode('login')}
+                className="text-accent hover:underline font-medium"
+              >
+                Sign in
+              </button>
+            </>
+          ) : (
+            <>
+              New here?{' '}
+              <button
+                onClick={() => setMode('signup')}
+                className="text-accent hover:underline font-medium"
+              >
+                Create an account
+              </button>
+            </>
+          )}
+        </p>
       </div>
     </div>
   );
