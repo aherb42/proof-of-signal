@@ -11,8 +11,8 @@ import { Button } from '@/components/ui/button';
 
 const navItems = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/profile', label: 'Profile', icon: User },
   { to: '/patterns', label: 'Patterns', icon: TrendingUp },
+  { to: '/profile', label: 'Profile', icon: User },
 ];
 
 const Navbar = () => {
