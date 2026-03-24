@@ -174,6 +174,24 @@ const Onboarding = () => {
       <p className="text-sm text-muted-foreground mb-8">
         Signals are moments worth remembering. Here's a real one:
       </p>
+      {/* Illustration */}
+      <div className="flex justify-center mb-6">
+        <svg width="120" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-navy">
+          {/* Notepad */}
+          <rect x="30" y="10" width="60" height="55" rx="4" fill="hsl(var(--rose-soft))" stroke="currentColor" strokeWidth="1.5" />
+          <line x1="40" y1="25" x2="80" y2="25" stroke="currentColor" strokeWidth="1" opacity="0.4" />
+          <line x1="40" y1="33" x2="75" y2="33" stroke="currentColor" strokeWidth="1" opacity="0.4" />
+          <line x1="40" y1="41" x2="70" y2="41" stroke="currentColor" strokeWidth="1" opacity="0.4" />
+          <line x1="40" y1="49" x2="65" y2="49" stroke="currentColor" strokeWidth="1" opacity="0.4" />
+          {/* Pen */}
+          <rect x="85" y="5" width="4" height="30" rx="1" fill="currentColor" transform="rotate(15 87 20)" opacity="0.7" />
+          <polygon points="84,35 88,35 86,42" fill="currentColor" transform="rotate(15 86 38)" opacity="0.7" />
+          {/* Small sparkle */}
+          <circle cx="22" cy="20" r="2" fill="currentColor" opacity="0.3" />
+          <circle cx="100" cy="50" r="1.5" fill="currentColor" opacity="0.25" />
+          <circle cx="15" cy="55" r="1" fill="currentColor" opacity="0.2" />
+        </svg>
+      </div>
       <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
         <p className="text-foreground leading-relaxed mb-4 italic">
           "Felt like my idea in the roadmap meeting got picked up by someone else without credit. Wasn't sure if I imagined it."
@@ -228,12 +246,12 @@ const Onboarding = () => {
       ) : (
         <div className="text-center animate-fade-in">
           <div className="w-16 h-16 rounded-full bg-rose-soft flex items-center justify-center mx-auto mb-6">
-            <Check className="w-7 h-7 text-navy" />
+            <span className="text-navy text-2xl font-bold">✦</span>
           </div>
-          <p className="text-xl font-serif text-navy mb-3">Signal Captured ✓</p>
-          <Badge variant="secondary" className="bg-rose-soft text-navy border-0 mb-8">
-            {assignedTag}
-          </Badge>
+          <p className="text-xl font-serif text-navy mb-2">Signal captured.</p>
+          <p className="text-sm text-muted-foreground mb-8">
+            We've tagged this as <Badge variant="secondary" className="bg-rose-soft text-navy border-0 inline-flex">{assignedTag}</Badge>. Log 2 more signals to start seeing patterns.
+          </p>
           <Button
             onClick={() => navigate('/dashboard')}
             className="w-full bg-navy hover:bg-navy-light text-primary-foreground py-6 rounded-xl"

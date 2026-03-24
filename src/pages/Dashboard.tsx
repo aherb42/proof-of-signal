@@ -113,9 +113,13 @@ const Dashboard = () => {
               <h2 className="text-lg font-serif text-navy mb-4">Log a signal</h2>
               {justLogged ? (
                 <div className="text-center py-4 animate-fade-in">
-                  <Check className="w-6 h-6 text-navy mx-auto mb-2" />
-                  <p className="font-medium text-navy">Logged. ✓</p>
-                  <Badge variant="secondary" className="bg-rose-soft text-navy border-0 mt-2">{lastTag}</Badge>
+                  <div className="w-12 h-12 rounded-full bg-rose-soft flex items-center justify-center mx-auto mb-3">
+                    <span className="text-navy text-lg font-bold">✦</span>
+                  </div>
+                  <p className="font-medium font-serif text-navy mb-1">Signal captured.</p>
+                  <p className="text-sm text-muted-foreground">
+                    We've tagged this as <Badge variant="secondary" className="bg-rose-soft text-navy border-0 inline-flex">{lastTag}</Badge>. Log 2 more signals to start seeing patterns.
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-4">
