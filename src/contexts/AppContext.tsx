@@ -25,6 +25,7 @@ interface AppState {
   setUser: (user: Partial<UserProfile>) => void;
   addSignal: (signal: Omit<Signal, 'id'>) => void;
   updateSignal: (id: string, updates: Partial<Signal>) => void;
+  deleteSignal: (id: string) => void;
   toggleFlag: (id: string) => void;
   resetToDemo: () => void;
 }
@@ -127,12 +128,19 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }));
   };
 
+  const deleteSignal = (id: string) => {
+    setState(prev => ({
+      ...prev,
+      signals: prev.signals.filter(s => s.id !== id),
+    }));
+  };
+
   const resetToDemo = () => {
     setState({ user: demoUser, signals: demoSignals });
   };
 
   return (
-    <AppContext.Provider value={{ ...state, setUser, addSignal, updateSignal, toggleFlag, resetToDemo }}>
+    <AppContext.Provider value={{ ...state, setUser, addSignal, updateSignal, deleteSignal, toggleFlag, resetToDemo }}>
       {children}
     </AppContext.Provider>
   );
