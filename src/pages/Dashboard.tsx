@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
 import { autoTag, SIGNAL_TAGS } from '@/lib/signalTagger';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,7 @@ import EmptyState from '@/components/illustrations/EmptyState';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const { user, signals, addSignal, updateSignal, toggleFlag } = useApp();
   const [text, setText] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -20,6 +22,7 @@ const Dashboard = () => {
   const [justLogged, setJustLogged] = useState(false);
   const [lastTag, setLastTag] = useState('');
   const [showFlaggedOnly, setShowFlaggedOnly] = useState(false);
+  const [selectedAttendee, setSelectedAttendee] = useState<string | null>(null);
   const { supported: voiceSupported, listening, toggle: toggleVoice } = useVoiceInput((transcript) => {
     setText(prev => prev ? `${prev} ${transcript}`.slice(0, 500) : transcript.slice(0, 500));
   });
@@ -46,7 +49,24 @@ const Dashboard = () => {
   ];
 
   const showInsight = signalCount >= 3;
-  const displayedSignals = showFlaggedOnly ? signals.filter(s => s.flagged) : signals;
+
+  // Extract unique attendees from all signals
+  const allAttendees = useMemo(() => {
+    const names = new Set<string>();
+    signals.forEach(s => {
+      if (s.context?.attendees) {
+        s.context.attendees.split(/[,;]/).forEach(name => {
+          const trimmed = name.trim();
+          if (trimmed) names.add(trimmed);
+        });
+      }
+    });
+    return Array.from(names).sort();
+  }, [signals]);
+
+  const displayedSignals = signals
+    .filter(s => !showFlaggedOnly || s.flagged)
+    .filter(s => !selectedAttendee || (s.context?.attendees?.toLowerCase().includes(selectedAttendee.toLowerCase())));
 
   return (
     <div className="min-h-screen bg-background">
@@ -169,7 +189,10 @@ const Dashboard = () => {
           <div className="space-y-8">
             {/* Insight Card (SC-03) */}
             {showInsight && (
-              <div className="bg-gradient-to-br from-rose-soft to-blush-light rounded-2xl p-6 border border-blush/20 animate-fade-in">
+              <div
+                onClick={() => navigate('/patterns')}
+                className="bg-gradient-to-br from-rose-soft to-blush-light rounded-2xl p-6 border border-blush/20 animate-fade-in cursor-pointer hover:shadow-md hover:border-blush/40 transition-all"
+              >
                 <div className="flex items-start gap-3">
                   <div className="w-8 h-8 rounded-full bg-navy flex items-center justify-center flex-shrink-0 mt-0.5">
                     <span className="text-primary-foreground text-xs font-bold">✦</span>
@@ -199,17 +222,36 @@ const Dashboard = () => {
 
             {/* Signal Timeline (SC-04) */}
             <div>
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3 mb-4 flex-wrap">
                 <h2 className="text-lg font-serif text-navy">Your signals</h2>
-                <button
-                  onClick={() => setShowFlaggedOnly(!showFlaggedOnly)}
-                  className={`flex items-center gap-1.5 text-xs transition-colors ${
-                    showFlaggedOnly ? 'text-navy font-medium' : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  <Filter className="w-3.5 h-3.5" />
-                  {showFlaggedOnly ? 'Showing flagged' : 'Filter flagged'}
-                </button>
+                <div className="flex items-center gap-2 ml-auto flex-wrap">
+                  {allAttendees.length > 0 && (
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      {allAttendees.map(name => (
+                        <button
+                          key={name}
+                          onClick={() => setSelectedAttendee(selectedAttendee === name ? null : name)}
+                          className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+                            selectedAttendee === name
+                              ? 'bg-navy text-primary-foreground border-navy'
+                              : 'bg-card text-muted-foreground border-border hover:border-blush/40'
+                          }`}
+                        >
+                          👥 {name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  <button
+                    onClick={() => setShowFlaggedOnly(!showFlaggedOnly)}
+                    className={`flex items-center gap-1.5 text-xs transition-colors ${
+                      showFlaggedOnly ? 'text-navy font-medium' : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    <Filter className="w-3.5 h-3.5" />
+                    {showFlaggedOnly ? 'Showing flagged' : 'Filter flagged'}
+                  </button>
+                </div>
               </div>
 
               {displayedSignals.length === 0 ? (
