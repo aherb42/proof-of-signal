@@ -269,6 +269,22 @@ const Dashboard = () => {
               <div className="flex items-center gap-3 mb-4 flex-wrap">
                 <h2 className="text-lg font-serif text-navy">Your signals</h2>
                 <div className="flex items-center gap-2 ml-auto flex-wrap">
+                  {/* Tag filter */}
+                  <Select
+                    value={selectedTag || 'all'}
+                    onValueChange={val => setSelectedTag(val === 'all' ? null : val)}
+                  >
+                    <SelectTrigger className="h-8 w-[160px] text-xs rounded-full border-border">
+                      <Tag className="w-3.5 h-3.5 mr-1.5 text-muted-foreground" />
+                      <SelectValue placeholder="All tags" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All tags</SelectItem>
+                      {SIGNAL_TAGS.map(tag => (
+                        <SelectItem key={tag} value={tag}>{tag}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   {allAttendees.length > 0 && (
                     <div className="flex items-center gap-1.5 flex-wrap">
                       {allAttendees.map(name => (
@@ -300,19 +316,29 @@ const Dashboard = () => {
 
               {displayedSignals.length === 0 ? (
                 <EmptyState
-                  title={showFlaggedOnly ? 'No flagged signals' : 'No signals yet'}
-                  description={showFlaggedOnly ? 'Flag signals you want to revisit for reviews.' : 'Log your first signal above to start building your record.'}
+                  title={showFlaggedOnly || selectedTag ? 'No matching signals' : 'No signals yet'}
+                  description={showFlaggedOnly || selectedTag ? 'Try adjusting your filters.' : 'Log your first signal above to start building your record.'}
                 />
               ) : (
-                <div className="space-y-3">
-                  {displayedSignals.map(signal => (
-                    <SignalCard
-                      key={signal.id}
-                      signal={signal}
-                      onUpdate={updateSignal}
-                      onDelete={deleteSignal}
-                      onToggleFlag={toggleFlag}
-                    />
+                <div className="space-y-6">
+                  {groupedSignals.map(group => (
+                    <div key={group.label}>
+                      <div className="flex items-center gap-3 mb-3">
+                        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{group.label}</span>
+                        <Separator className="flex-1" />
+                      </div>
+                      <div className="space-y-3">
+                        {group.signals.map(signal => (
+                          <SignalCard
+                            key={signal.id}
+                            signal={signal}
+                            onUpdate={updateSignal}
+                            onDelete={deleteSignal}
+                            onToggleFlag={toggleFlag}
+                          />
+                        ))}
+                      </div>
+                    </div>
                   ))}
                 </div>
               )}
