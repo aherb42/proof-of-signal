@@ -1,6 +1,10 @@
+/**
+ * useVoiceInput — hook for browser-native speech recognition.
+ *
+ * @param onTranscript - Callback invoked with the recognised text when speech ends.
+ * @returns `{ supported, listening, toggle }` — whether the API exists, current state, and a start/stop toggle.
+ */
 import { useState, useEffect, useCallback, useRef } from 'react';
-
-type SpeechRecognitionType = typeof window extends { SpeechRecognition: infer T } ? T : any;
 
 export function useVoiceInput(onTranscript: (text: string) => void) {
   const [supported, setSupported] = useState(false);

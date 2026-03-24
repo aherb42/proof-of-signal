@@ -1,4 +1,9 @@
+/**
+ * Index — marketing landing page.
+ * Presents the product value proposition, feature overview, social proof, and CTA.
+ */
 import { useNavigate } from 'react-router-dom';
+import { useApp } from '@/contexts/AppContext';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, CheckCircle2 } from 'lucide-react';
 import HeroIllustration from '@/components/illustrations/HeroIllustration';
@@ -39,6 +44,7 @@ const testimonials = [
 
 const Index = () => {
   const navigate = useNavigate();
+  const { resetToDemo } = useApp();
 
   return (
     <div className="min-h-screen bg-background">
@@ -67,9 +73,8 @@ const Index = () => {
                   size="lg"
                   variant="outline"
                   onClick={() => {
-                    localStorage.removeItem('proof-of-signal');
+                    resetToDemo();
                     navigate('/dashboard');
-                    window.location.reload();
                   }}
                   className="px-10 py-7 text-lg rounded-2xl border-primary/20 text-primary hover:bg-primary/5"
                 >

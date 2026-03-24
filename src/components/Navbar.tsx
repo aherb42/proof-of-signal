@@ -1,5 +1,9 @@
+/**
+ * Navbar — top navigation bar.
+ * Hidden on the landing page and during onboarding. Shows Dashboard, Profile, and Patterns links.
+ */
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, User, TrendingUp, PenLine } from 'lucide-react';
+import { LayoutDashboard, User, TrendingUp } from 'lucide-react';
 
 const navItems = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },

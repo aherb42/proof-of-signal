@@ -1,8 +1,16 @@
+/**
+ * AppContext — global application state provider.
+ *
+ * Manages user profile, signal list, and persistence to localStorage.
+ * All storage reads/writes are centralised in `loadState` and `saveState`.
+ */
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
+/** Categories that can be assigned to flagged signals for review. */
 export const FLAG_CATEGORIES = ['Promotion evidence', 'Performance review', 'Difficult conversation', 'Watch closely', 'Uncategorized'] as const;
 export type FlagCategory = typeof FLAG_CATEGORIES[number];
 
+/** A single career signal logged by the user. */
 export interface Signal {
   id: string;
   text: string;
@@ -16,6 +24,7 @@ export interface Signal {
   };
 }
 
+/** Stored user profile data. */
 export interface UserProfile {
   firstName: string;
   careerStage: string;
@@ -89,20 +98,30 @@ const demoSignals: Signal[] = [
 
 const AppContext = createContext<AppState | undefined>(undefined);
 
+/** LocalStorage key for all persisted app data. */
 const STORAGE_KEY = 'proof-of-signal';
 
+/** Load persisted state from localStorage. Falls back to demo data on first visit or parse error. */
 function loadState(): { user: UserProfile; signals: Signal[] } {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) return JSON.parse(raw);
-  } catch {}
+  } catch {
+    // Corrupted storage — fall through to defaults
+  }
   return { user: demoUser, signals: demoSignals };
 }
 
+/** Persist current state to localStorage. Silently catches write errors. */
 function saveState(user: UserProfile, signals: Signal[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({ user, signals }));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ user, signals }));
+  } catch {
+    // Storage full or unavailable — silently degrade
+  }
 }
 
+/** Provides global app state (user + signals) to the component tree. */
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [state, setState] = useState(loadState);
 
@@ -140,10 +159,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }));
   };
 
+  /** Load the built-in Diana demo dataset. */
   const resetToDemo = () => {
     setState({ user: demoUser, signals: demoSignals });
   };
 
+  /** Wipe all data and return to a fresh-install state. */
   const resetToClean = () => {
     localStorage.removeItem(STORAGE_KEY);
     setState({ user: defaultUser, signals: [] });
@@ -156,6 +177,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
+/** Access the global app state. Must be used inside <AppProvider>. */
 export const useApp = () => {
   const ctx = useContext(AppContext);
   if (!ctx) throw new Error('useApp must be inside AppProvider');

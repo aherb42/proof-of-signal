@@ -1,3 +1,4 @@
+/** AvatarSilhouettes — overlapping avatar circles used in the social-proof section. */
 const avatars = [
   { initials: 'DK', bg: 'bg-navy', text: 'text-primary-foreground' },
   { initials: 'SA', bg: 'bg-blush', text: 'text-navy' },

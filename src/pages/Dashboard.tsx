@@ -1,7 +1,14 @@
+/**
+ * Dashboard — main logged-in view.
+ *
+ * Shows a getting-started checklist, signal log form with confirmation state,
+ * pattern insight card (navigates to Patterns), and a filterable signal timeline.
+ */
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
 import { autoTag, SIGNAL_TAGS } from '@/lib/signalTagger';
+import { THEME_INSIGHTS } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -28,6 +35,7 @@ const Dashboard = () => {
     setText(prev => prev ? `${prev} ${transcript}`.slice(0, 500) : transcript.slice(0, 500));
   });
 
+  /** Submit a new signal and show the confirmation state briefly. */
   const handleSubmit = () => {
     const tag = autoTag(text);
     setLastTag(tag);
@@ -51,22 +59,14 @@ const Dashboard = () => {
 
   const showInsight = signalCount >= 3;
 
+  /** Determine the most frequent signal tag for insight copy. */
   const topTheme = useMemo(() => {
     const counts: Record<string, number> = {};
     signals.forEach(s => { counts[s.tag] = (counts[s.tag] || 0) + 1; });
     return Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0] || '';
   }, [signals]);
 
-  const THEME_INSIGHTS: Record<string, string> = {
-    'Recognition': "You're being seen at the right levels. The question now is whether your manager is connecting these moments to your readiness for the next step.",
-    'Missed Credit': "A pattern worth watching: your contributions are landing, but the attribution isn't always following. That gap is worth naming — especially before a performance conversation.",
-    'Manager Signal': "Your signals suggest a shift in your manager dynamic. Whether it's positive or concerning, it's worth paying attention to before your next 1:1.",
-    'Constructive Feedback': "You're getting input. The question is whether you're capturing it in a way that shows growth over time — not just in the moment.",
-    'Personal Milestone': "You're stepping up. Make sure these moments are on record — they're the evidence your promotion conversation needs.",
-    'Org / Political Signal': "You're picking up on organizational dynamics early. That awareness is an asset — especially if you're navigating a shift in team or leadership.",
-  };
-
-  // Extract unique attendees from all signals
+  /** Extract unique attendee names from all signals for the filter chips. */
   const allAttendees = useMemo(() => {
     const names = new Set<string>();
     signals.forEach(s => {
@@ -98,7 +98,7 @@ const Dashboard = () => {
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Left Column: Checklist + Signal Form */}
           <div className="space-y-8">
-            {/* Checklist (OB-06) */}
+            {/* Checklist */}
             <div className="bg-card rounded-2xl border border-border p-6">
               <h2 className="text-lg font-serif text-navy mb-4">Getting started</h2>
               <div className="space-y-3">
@@ -124,7 +124,7 @@ const Dashboard = () => {
               </div>
             </div>
 
-            {/* Signal Form (SC-01) */}
+            {/* Signal Form */}
             <div className="bg-card rounded-2xl border border-border p-6">
               <h2 className="text-lg font-serif text-navy mb-4">Log a signal</h2>
               {justLogged ? (
@@ -169,7 +169,7 @@ const Dashboard = () => {
                     />
                     <span className="text-xs text-muted-foreground">{text.length}/500</span>
                   </div>
-                  {/* Optional context (SC-06) */}
+                  {/* Optional context */}
                   <button
                     onClick={() => setShowContext(!showContext)}
                     className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
@@ -207,7 +207,7 @@ const Dashboard = () => {
 
           {/* Right Column: Insight + Timeline */}
           <div className="space-y-8">
-            {/* Insight Card (SC-03) */}
+            {/* Insight Card */}
             {showInsight && (
               <div
                 onClick={() => navigate('/patterns')}
@@ -239,7 +239,7 @@ const Dashboard = () => {
               </div>
             )}
 
-            {/* Signal Timeline (SC-04) */}
+            {/* Signal Timeline */}
             <div>
               <div className="flex items-center gap-3 mb-4 flex-wrap">
                 <h2 className="text-lg font-serif text-navy">Your signals</h2>

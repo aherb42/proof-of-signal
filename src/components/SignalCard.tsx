@@ -1,3 +1,12 @@
+/**
+ * SignalCard — renders a single signal with inline tag selector, edit/delete modals, and flag toggle.
+ *
+ * Props:
+ * - `signal` — the Signal object to display
+ * - `onUpdate` — callback to persist field edits
+ * - `onDelete` — callback to remove the signal
+ * - `onToggleFlag` — callback to toggle the flagged state
+ */
 import { useState } from 'react';
 import { Signal } from '@/contexts/AppContext';
 import { SIGNAL_TAGS } from '@/lib/signalTagger';
@@ -25,6 +34,7 @@ const SignalCard = ({ signal, onUpdate, onDelete, onToggleFlag }: SignalCardProp
   const [editMeeting, setEditMeeting] = useState(signal.context?.meeting || '');
   const [editAttendees, setEditAttendees] = useState(signal.context?.attendees || '');
 
+  /** Reset edit fields to current signal values and open the edit modal. */
   const openEdit = () => {
     setEditText(signal.text);
     setEditDate(signal.date);
@@ -34,6 +44,7 @@ const SignalCard = ({ signal, onUpdate, onDelete, onToggleFlag }: SignalCardProp
     setEditing(true);
   };
 
+  /** Persist edits and close the modal. */
   const saveEdit = () => {
     const context = (editMeeting || editAttendees) ? { meeting: editMeeting, attendees: editAttendees } : undefined;
     onUpdate(signal.id, { text: editText, date: editDate, tag: editTag, context });

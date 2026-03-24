@@ -1,7 +1,14 @@
+/**
+ * Onboarding — 5-step narrative flow for new users.
+ *
+ * Steps: Welcome → Name & Career Stage → Goals (max 2) → Signal Example → First Signal.
+ * Profile data is only committed to storage on final signal submission.
+ */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
 import { autoTag } from '@/lib/signalTagger';
+import { CAREER_STAGES, GOALS } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -10,24 +17,6 @@ import { ArrowRight, ArrowLeft, Check, Mic } from 'lucide-react';
 import { useVoiceInput } from '@/hooks/use-voice-input';
 import { useToast } from '@/hooks/use-toast';
 import HeroIllustration from '@/components/illustrations/HeroIllustration';
-
-const CAREER_STAGES = [
-  'Aspiring PM',
-  'Associate / Junior PM',
-  'Product Manager',
-  'Senior PM',
-  'Group PM / Director',
-  'VP of Product / CPO',
-];
-
-const GOALS = [
-  'Getting promoted',
-  'Building executive presence',
-  'Navigating stakeholder dynamics',
-  'Transitioning into product',
-  'Getting better at strategy',
-  'Documenting my impact',
-];
 
 const Onboarding = () => {
   const [step, setStep] = useState(0);
@@ -51,6 +40,7 @@ const Onboarding = () => {
 
   const { toast } = useToast();
 
+  /** Toggle a goal; if 2 already selected, replace the least-recently-selected one. */
   const toggleGoal = (g: string) => {
     setGoals(prev => {
       if (prev.includes(g)) return prev.filter(x => x !== g);
@@ -78,6 +68,7 @@ const Onboarding = () => {
     });
   };
 
+  /** Submit the first signal and finalise the onboarding profile. */
   const submitSignal = () => {
     const tag = autoTag(signalText);
     setAssignedTag(tag);
@@ -177,16 +168,13 @@ const Onboarding = () => {
       {/* Illustration */}
       <div className="flex justify-center mb-6">
         <svg width="120" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-navy">
-          {/* Notepad */}
           <rect x="30" y="10" width="60" height="55" rx="4" fill="hsl(var(--rose-soft))" stroke="currentColor" strokeWidth="1.5" />
           <line x1="40" y1="25" x2="80" y2="25" stroke="currentColor" strokeWidth="1" opacity="0.4" />
           <line x1="40" y1="33" x2="75" y2="33" stroke="currentColor" strokeWidth="1" opacity="0.4" />
           <line x1="40" y1="41" x2="70" y2="41" stroke="currentColor" strokeWidth="1" opacity="0.4" />
           <line x1="40" y1="49" x2="65" y2="49" stroke="currentColor" strokeWidth="1" opacity="0.4" />
-          {/* Pen */}
           <rect x="85" y="5" width="4" height="30" rx="1" fill="currentColor" transform="rotate(15 87 20)" opacity="0.7" />
           <polygon points="84,35 88,35 86,42" fill="currentColor" transform="rotate(15 86 38)" opacity="0.7" />
-          {/* Small sparkle */}
           <circle cx="22" cy="20" r="2" fill="currentColor" opacity="0.3" />
           <circle cx="100" cy="50" r="1.5" fill="currentColor" opacity="0.25" />
           <circle cx="15" cy="55" r="1" fill="currentColor" opacity="0.2" />

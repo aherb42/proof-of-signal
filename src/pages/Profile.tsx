@@ -1,6 +1,10 @@
+/**
+ * Profile — user profile viewer/editor with demo reset and clean-account reset.
+ */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
+import { CAREER_STAGES, GOALS } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -16,16 +20,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-
-const CAREER_STAGES = [
-  'Aspiring PM', 'Associate / Junior PM', 'Product Manager',
-  'Senior PM', 'Group PM / Director', 'VP of Product / CPO',
-];
-
-const GOALS = [
-  'Getting promoted', 'Building executive presence', 'Navigating stakeholder dynamics',
-  'Transitioning into product', 'Getting better at strategy', 'Documenting my impact',
-];
 
 const Profile = () => {
   const { user, signals, setUser, resetToDemo, resetToClean } = useApp();
