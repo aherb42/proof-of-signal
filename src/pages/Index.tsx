@@ -58,7 +58,7 @@ const Index = () => {
         {/* White overlay fading toward bottom */}
         <div className="absolute inset-0 bg-background/[0.78]" />
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-background" />
-        <div className="relative w-full px-[80px] pt-20 pb-24 lg:pt-32 lg:pb-40">
+        <div className="relative w-full px-[100px] pt-20 pb-24 lg:pt-32 lg:pb-40">
           <div className="grid lg:grid-cols-2 gap-16 items-center max-w-[1600px] mx-auto">
             <div className="animate-fade-in">
               <p className="text-sm font-bold tracking-[0.25em] uppercase text-accent mb-5">Proof of Signal</p>
