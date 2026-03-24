@@ -7,7 +7,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
-import { autoTag } from '@/lib/signalTagger';
+import { classifySignal } from '@/lib/signalTagger';
 import { CAREER_STAGES, GOALS } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -68,9 +68,13 @@ const Onboarding = () => {
     });
   };
 
+  const [isClassifying, setIsClassifying] = useState(false);
+
   /** Submit the first signal and finalise the onboarding profile. */
-  const submitSignal = () => {
-    const tag = autoTag(signalText);
+  const submitSignal = async () => {
+    setIsClassifying(true);
+    const tag = await classifySignal(signalText);
+    setIsClassifying(false);
     setAssignedTag(tag);
     addSignal({ text: signalText, date: new Date().toISOString().split('T')[0], tag, flagged: false });
     setUser({ firstName, careerStage, goals, onboardingComplete: true });
@@ -225,10 +229,10 @@ const Onboarding = () => {
           <p className="text-xs text-muted-foreground mb-6 text-right">{signalText.length}/500</p>
           <Button
             onClick={submitSignal}
-            disabled={!signalText.trim()}
+            disabled={!signalText.trim() || isClassifying}
             className="w-full bg-navy hover:bg-navy-light text-primary-foreground py-6 rounded-xl"
           >
-            Log signal
+            {isClassifying ? 'Classifying…' : 'Log signal'}
           </Button>
         </>
       ) : (

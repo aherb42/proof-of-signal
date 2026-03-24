@@ -7,7 +7,7 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
-import { autoTag, SIGNAL_TAGS } from '@/lib/signalTagger';
+import { classifySignal, SIGNAL_TAGS } from '@/lib/signalTagger';
 import { THEME_INSIGHTS } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -35,9 +35,13 @@ const Dashboard = () => {
     setText(prev => prev ? `${prev} ${transcript}`.slice(0, 500) : transcript.slice(0, 500));
   });
 
+  const [isClassifying, setIsClassifying] = useState(false);
+
   /** Submit a new signal and show the confirmation state briefly. */
-  const handleSubmit = () => {
-    const tag = autoTag(text);
+  const handleSubmit = async () => {
+    setIsClassifying(true);
+    const tag = await classifySignal(text);
+    setIsClassifying(false);
     setLastTag(tag);
     const context = (meeting || attendees) ? { meeting, attendees } : undefined;
     addSignal({ text, date, tag, flagged: false, context });
@@ -195,10 +199,10 @@ const Dashboard = () => {
                   )}
                   <Button
                     onClick={handleSubmit}
-                    disabled={!text.trim()}
+                    disabled={!text.trim() || isClassifying}
                     className="w-full bg-navy hover:bg-navy-light text-primary-foreground rounded-xl py-5"
                   >
-                    Log signal
+                    {isClassifying ? 'Classifying…' : 'Log signal'}
                   </Button>
                 </div>
               )}
