@@ -1,10 +1,22 @@
+import { useState } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { Badge } from '@/components/ui/badge';
 import EmptyState from '@/components/illustrations/EmptyState';
 import { SIGNAL_TAGS } from '@/lib/signalTagger';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+
+const TAG_DEFINITIONS: Record<string, string> = {
+  'Recognition': 'Your contribution was acknowledged publicly or privately — a shoutout in a meeting, positive feedback from a stakeholder, or a peer crediting your work.',
+  'Missed Credit': 'Your idea, work, or contribution was attributed to someone else, or went unacknowledged entirely. Can be subtle — worth noting even when you\'re not sure.',
+  'Constructive Feedback': 'Input you received about an area to develop or improve. Includes formal feedback, informal coaching, or repeated observations from others.',
+  'Manager Signal': 'A shift in your manager\'s behavior, tone, or attention toward you — shorter 1:1s, change in communication style, new visibility or reduced access.',
+  'Org / Political Signal': 'An organizational dynamic worth tracking — restructuring, budget signals, stakeholder shifts, or changes in team direction that affect your position.',
+  'Personal Milestone': 'A meaningful moment in your own career progression — first time leading something, a stretch assignment, a door that opened.',
+};
 
 const Patterns = () => {
   const { signals, user } = useApp();
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
   const tagCounts = SIGNAL_TAGS.reduce((acc, tag) => {
     acc[tag] = signals.filter(s => s.tag === tag).length;
@@ -38,9 +50,11 @@ const Patterns = () => {
               <div className="space-y-3">
                 {topTags.map(([tag, count]) => (
                   <div key={tag} className="flex items-center gap-3">
-                    <Badge variant="secondary" className="bg-rose-soft text-navy border-0 text-xs w-36 justify-center">
-                      {tag}
-                    </Badge>
+                    <button onClick={() => setSelectedTag(tag)} className="focus:outline-none">
+                      <Badge variant="secondary" className="bg-rose-soft text-navy border-0 text-xs w-36 justify-center cursor-pointer hover:bg-blush/40 transition-colors">
+                        {tag}
+                      </Badge>
+                    </button>
                     <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
                       <div
                         className="h-full bg-navy rounded-full transition-all"
@@ -102,6 +116,18 @@ const Patterns = () => {
           </div>
         )}
       </div>
+
+      {/* Tag Definition Modal */}
+      <Dialog open={!!selectedTag} onOpenChange={() => setSelectedTag(null)}>
+        <DialogContent className="rounded-2xl max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-serif text-navy">{selectedTag}</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-foreground leading-relaxed">
+            {selectedTag ? TAG_DEFINITIONS[selectedTag] ?? 'No definition available.' : ''}
+          </p>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
